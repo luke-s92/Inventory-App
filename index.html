@@ -1,41 +1,227 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <title>Inventory Scanner</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
-  <div id="loginView" class="card">
-    <h1>Login</h1>
-    <p>Enter your 4-digit PIN</p>
-    <input id="pin" type="text" maxlength="4" inputmode="numeric" placeholder="4-digit PIN">
-    <div class="row">
-      <button id="btnLogin">Login</button>
-      <button id="btnClearPin">Clear</button>
+  <div id="loginView" class="page">
+    <div class="card">
+      <div class="big">Login</div>
+      <div class="muted" style="margin-top:8px;">Enter your 4-digit PIN to access the Inventory app.</div>
+
+      <input
+        class="input"
+        id="pin"
+        inputmode="numeric"
+        pattern="[0-9]*"
+        maxlength="4"
+        placeholder="4-digit PIN"
+        style="margin-top:12px;"
+      />
+
+      <div class="row2" style="margin-top:12px;">
+        <button class="btn btn-primary" id="btnLogin">Login</button>
+        <button class="btn" id="btnClearPin">Clear</button>
+      </div>
+
+      <div id="loginStatus" class="status muted"></div>
     </div>
-    <div id="loginStatus"></div>
   </div>
 
-  <div id="appView" style="display:none;">
+  <div id="appView" class="page" style="display:none;">
     <div class="tabs">
-      <button id="tabScan">Scanner</button>
-      <button id="tabLow">Low Stock</button>
-      <button id="tabInv">Inventory</button>
-    </div>
-
-    <div id="scanView" class="card">
-      <h2>Scan</h2>
-      <video id="video" playsinline autoplay muted></video>
-      <div id="scanStatus">Camera idle.</div>
-      <div class="row">
-        <button id="btnStart">Start Camera</button>
-        <button id="btnStop" disabled>Stop</button>
+      <div class="tabRow">
+        <button class="tabBtn active" id="tabScan">Scanner</button>
+        <button class="tabBtn" id="tabLow">Low Stock</button>
+        <button class="tabBtn" id="tabInv">Inventory</button>
       </div>
     </div>
+
+    <div id="scanView">
+      <div class="card">
+        <div class="big">Scan</div>
+        <div class="muted" style="margin-top:8px;">
+          QR labels (INV:SKU) scan best. Supplier barcodes map onto internal SKUs via the Barcode column.
+        </div>
+
+        <div style="margin-top:12px;">
+          <div class="scannerWrap" id="scannerWrap">
+            <video id="video" playsinline muted></video>
+            <div class="scanOverlay">
+              <div class="scanFrame"></div>
+              <div class="corner tl"></div>
+              <div class="corner tr"></div>
+              <div class="corner bl"></div>
+              <div class="corner br"></div>
+              <div class="scanLine"></div>
+            </div>
+          </div>
+
+          <div class="scanHint">Align code inside the frame</div>
+          <div id="scanStatus" class="status muted">Camera idle.</div>
+          <div id="scanDebug" class="status muted" style="font-size:13px; margin-top:6px;"></div>
+        </div>
+
+        <div class="row2" style="margin-top:12px;">
+          <button class="btn btn-primary" id="btnStart">Start Camera</button>
+          <button class="btn" id="btnStop" disabled>Stop</button>
+          <button class="btn btn-torch" id="btnTorch" disabled>Flash: OFF</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="big">Code</div>
+        <input class="input" id="code" placeholder="Scan QR / barcode or type SKU" style="margin-top:12px;" />
+
+        <div class="row2" style="margin-top:12px;">
+          <button class="btn" id="btnLookup">Lookup</button>
+          <button class="btn" id="btnClear">Clear</button>
+        </div>
+
+        <div id="lookupStatus" class="status muted"></div>
+      </div>
+
+      <div class="card">
+        <div class="big">Product</div>
+
+        <div class="imgWrap">
+          <img id="productImg" class="prodImg" alt="Product image" />
+          <div id="productImgEmpty" class="imgEmpty">No image yet.</div>
+        </div>
+
+        <div class="row2" style="margin-top:12px;">
+          <button class="btn btn-primary" id="btnAddImage" disabled>Take / Upload Image</button>
+          <button class="btn" id="btnEdit" disabled>Edit Product</button>
+        </div>
+
+        <div id="productBox" class="muted" style="margin-top:10px;">No product loaded.</div>
+
+        <div class="grid2" style="margin-top:14px;">
+          <input class="input" id="qty" type="number" min="1" step="1" placeholder="Qty (required)" />
+          <input class="input" id="ref" placeholder="Ref (optional)" />
+        </div>
+        <input class="input" id="note" placeholder="Note (optional)" style="margin-top:12px;" />
+
+        <div class="row2" style="margin-top:12px;">
+          <button class="btn btn-in" id="btnIn" disabled>Book IN</button>
+          <button class="btn btn-out" id="btnOut" disabled>Book OUT</button>
+        </div>
+
+        <button class="btn btn-create" id="btnCreate" style="margin-top:12px; display:none;">
+          Create Product (Not Found)
+        </button>
+
+        <div id="moveStatus" class="status muted"></div>
+      </div>
+
+      <div class="card" id="createCard" style="display:none;">
+        <div class="big">Create Product</div>
+        <div class="muted" style="margin-top:8px;">
+          Create once, then your QR labels will always scan reliably.
+        </div>
+
+        <div class="grid2" style="margin-top:14px;">
+          <input class="input" id="cSku" placeholder="SKU (required)" />
+          <input class="input" id="cBarcode" placeholder="Supplier Barcode (optional)" />
+        </div>
+
+        <input class="input" id="cName" placeholder="Name (required)" style="margin-top:12px;" />
+        <input class="input" id="cLocation" placeholder="Location (optional)" style="margin-top:12px;" />
+
+        <div class="grid2" style="margin-top:12px;">
+          <input class="input" id="cQty" type="number" min="0" step="1" placeholder="Starting Qty (default 0)" />
+          <input class="input" id="cMin" type="number" min="0" step="1" placeholder="Min Qty (default 0)" />
+        </div>
+
+        <input class="input" id="cNotes" placeholder="Notes (optional)" style="margin-top:12px;" />
+
+        <div class="row2" style="margin-top:12px;">
+          <button class="btn btn-create" id="btnSaveCreate">Save Product</button>
+          <button class="btn" id="btnCancelCreate">Cancel</button>
+        </div>
+
+        <div id="createStatus" class="status muted"></div>
+      </div>
+
+      <div class="card" id="editCard" style="display:none;">
+        <div class="big">Edit Product</div>
+        <div class="muted" style="margin-top:8px;">
+          Attach or update the supplier barcode for an existing SKU.
+        </div>
+
+        <div class="imgWrap" style="margin-top:12px;">
+          <img id="editImg" class="prodImg" alt="Product image" />
+          <div id="editImgEmpty" class="imgEmpty">No image yet.</div>
+        </div>
+
+        <div class="row2" style="margin-top:12px;">
+          <button class="btn btn-primary" id="btnAddImageEdit">Take / Upload Image</button>
+        </div>
+
+        <input class="input" id="eSku" placeholder="SKU" style="margin-top:12px;" disabled />
+        <input class="input" id="eBarcode" placeholder="Supplier Barcode" style="margin-top:12px;" />
+
+        <div class="row2" style="margin-top:12px;">
+          <button class="btn btn-primary" id="btnScanEditBarcode">Scan into Barcode</button>
+        </div>
+
+        <input class="input" id="eName" placeholder="Name" style="margin-top:12px;" />
+        <input class="input" id="eLocation" placeholder="Location" style="margin-top:12px;" />
+        <input class="input" id="eMin" type="number" min="0" step="1" placeholder="Min Qty" style="margin-top:12px;" />
+        <input class="input" id="eNotes" placeholder="Notes" style="margin-top:12px;" />
+
+        <div class="row2" style="margin-top:12px;">
+          <button class="btn btn-create" id="btnSaveEdit">Save Changes</button>
+          <button class="btn" id="btnCancelEdit">Cancel</button>
+        </div>
+
+        <div id="editStatus" class="status muted"></div>
+      </div>
+    </div>
+
+    <div id="lowView" style="display:none;">
+      <div class="card">
+        <div class="big">Low Stock</div>
+        <div class="muted" style="margin-top:8px;">
+          Items where On Hand is at or below Min Qty (Min Qty must be &gt; 0).
+          Tap an item to open it in the Scanner tab.
+        </div>
+
+        <div class="row2" style="margin-top:12px;">
+          <button class="btn btn-primary" id="btnLowRefresh">Refresh</button>
+        </div>
+
+        <div id="lowStatus" class="status muted"></div>
+        <div id="lowList" class="list"></div>
+      </div>
+    </div>
+
+    <div id="invView" style="display:none;">
+      <div class="card">
+        <div class="big">Inventory</div>
+        <div class="muted" style="margin-top:8px;">
+          Search by SKU, barcode, name, or location. Tap an item to open it in the Scanner tab.
+        </div>
+
+        <div class="grid2" style="margin-top:12px;">
+          <input class="input" id="invSearch" placeholder="Search inventory…" />
+          <button class="btn btn-primary" id="btnInvRefresh">Search</button>
+        </div>
+
+        <div id="invStatus" class="status muted"></div>
+        <div id="invList" class="list"></div>
+      </div>
+    </div>
+
+    <input id="imgPicker" type="file" accept="image/*" capture="environment" style="display:none;" />
   </div>
 
-  <script src="app.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.20.0/umd/index.min.js"></script>
+  <script src="./app.js"></script>
 </body>
 </html>
