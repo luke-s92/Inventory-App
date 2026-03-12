@@ -1,1 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Inventory Scanner</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="loginView" class="card">
+    <h1>Login</h1>
+    <p>Enter your 4-digit PIN</p>
+    <input id="pin" type="text" maxlength="4" inputmode="numeric" placeholder="4-digit PIN">
+    <div class="row">
+      <button id="btnLogin">Login</button>
+      <button id="btnClearPin">Clear</button>
+    </div>
+    <div id="loginStatus"></div>
+  </div>
 
+  <div id="appView" style="display:none;">
+    <div class="tabs">
+      <button id="tabScan">Scanner</button>
+      <button id="tabLow">Low Stock</button>
+      <button id="tabInv">Inventory</button>
+    </div>
+
+    <div id="scanView" class="card">
+      <h2>Scan</h2>
+      <video id="video" playsinline autoplay muted></video>
+      <div id="scanStatus">Camera idle.</div>
+      <div class="row">
+        <button id="btnStart">Start Camera</button>
+        <button id="btnStop" disabled>Stop</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
