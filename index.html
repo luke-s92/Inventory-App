@@ -51,7 +51,7 @@
 
         <div style="margin-top:12px;">
           <div class="scannerWrap" id="scannerWrap">
-            <video id="video" playsinline muted></video>
+            <video id="video" playsinline muted autoplay></video>
             <div class="scanOverlay">
               <div class="scanFrame"></div>
               <div class="corner tl"></div>
@@ -221,6 +221,7 @@
     <input id="imgPicker" type="file" accept="image/*" capture="environment" style="display:none;" />
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.20.0/umd/index.min.js"></script>
   <script src="./app.js"></script>
 </body>
