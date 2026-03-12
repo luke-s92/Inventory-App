@@ -67,25 +67,6 @@
           <div id="scanDebug" class="status muted" style="font-size:13px; margin-top:6px;"></div>
         </div>
 
-        <!-- NEW: scanner mode + scan delay -->
-        <div class="grid2" style="margin-top:12px;">
-          <select class="input" id="scanMode">
-            <option value="auto">Auto Mode</option>
-            <option value="barcode">Fast Barcode Mode</option>
-            <option value="qr">QR Mode</option>
-          </select>
-
-          <input
-            class="input"
-            id="scanDelay"
-            type="number"
-            min="80"
-            step="20"
-            value="120"
-            placeholder="Scan delay ms"
-          />
-        </div>
-
         <div class="row2" style="margin-top:12px;">
           <button class="btn btn-primary" id="btnStart">Start Camera</button>
           <button class="btn" id="btnStop" disabled>Stop</button>
@@ -240,6 +221,7 @@
     <input id="imgPicker" type="file" accept="image/*" capture="environment" style="display:none;" />
   </div>
 
+  <script src="./jsqr.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.20.0/umd/index.min.js"></script>
   <script src="./app.js"></script>
 </body>
