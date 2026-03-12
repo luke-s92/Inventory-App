@@ -141,6 +141,44 @@ input:focus, textarea:focus, select:focus { outline: none; }
   border-color: #111;
 }
 
+/* NEW: scanner settings layout */
+.scanSettings {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+@media (min-width: 760px) {
+  .scanSettings {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.fieldLabel {
+  display: block;
+  font-weight: 800;
+  font-size: var(--fs-muted);
+  color: #444;
+  margin-bottom: 6px;
+}
+
+.selectWrap {
+  display: flex;
+  flex-direction: column;
+}
+
+.selectLike {
+  width: 100%;
+  padding: 18px 16px;
+  border-radius: 18px;
+  border: 1px solid #ccc;
+  background: #fff;
+  box-sizing: border-box;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
 .scannerWrap {
   position: relative;
   width: 100%;
@@ -294,4 +332,28 @@ td:first-child {
   padding: 12px 14px;
   color: #666;
   font-size: var(--fs-muted);
+}
+
+/* NEW: tighter controls on small phones */
+@media (max-width: 480px) {
+  .card {
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  .btn {
+    padding: 18px 14px;
+    border-radius: 16px;
+  }
+
+  .input,
+  .selectLike {
+    padding: 18px 14px;
+    border-radius: 16px;
+  }
+
+  #video {
+    min-height: 420px;
+    height: 62vh;
+  }
 }
