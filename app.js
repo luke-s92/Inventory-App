@@ -14,89 +14,89 @@ const IS_IOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
    ELEMENTS
 ========================= */
 
-const loginView = document.getElementById("loginView");
-const appView = document.getElementById("appView");
-const pinEl = document.getElementById("pin");
-const btnLogin = document.getElementById("btnLogin");
-const btnClearPin = document.getElementById("btnClearPin");
-const loginStatusEl = document.getElementById("loginStatus");
-const btnLogout = document.getElementById("btnLogout");
-
-const videoEl = document.getElementById("video");
-const scanStatusEl = document.getElementById("scanStatus");
-const scanDebugEl = document.getElementById("scanDebug");
-const lookupStatusEl = document.getElementById("lookupStatus");
-const moveStatusEl = document.getElementById("moveStatus");
-const productBoxEl = document.getElementById("productBox");
-
-const codeEl = document.getElementById("code");
-const qtyEl = document.getElementById("qty");
-const refEl = document.getElementById("ref");
-const noteEl = document.getElementById("note");
-
-const btnStart = document.getElementById("btnStart");
-const btnStop = document.getElementById("btnStop");
-const btnTorch = document.getElementById("btnTorch");
-const btnLookup = document.getElementById("btnLookup");
-const btnClear = document.getElementById("btnClear");
-const btnIn = document.getElementById("btnIn");
-const btnOut = document.getElementById("btnOut");
-const btnCreate = document.getElementById("btnCreate");
-const btnEdit = document.getElementById("btnEdit");
-
-const scanModeEl = document.getElementById("scanMode");
-const scanDelayEl = document.getElementById("scanDelay");
-
-const scannerWrap = document.getElementById("scannerWrap");
-
-const createCard = document.getElementById("createCard");
-const cSku = document.getElementById("cSku");
-const cBarcode = document.getElementById("cBarcode");
-const cName = document.getElementById("cName");
-const cLocation = document.getElementById("cLocation");
-const cQty = document.getElementById("cQty");
-const cMin = document.getElementById("cMin");
-const cNotes = document.getElementById("cNotes");
-const btnSaveCreate = document.getElementById("btnSaveCreate");
-const btnCancelCreate = document.getElementById("btnCancelCreate");
-const createStatusEl = document.getElementById("createStatus");
-
-const editCard = document.getElementById("editCard");
-const eSku = document.getElementById("eSku");
-const eBarcode = document.getElementById("eBarcode");
-const eName = document.getElementById("eName");
-const eLocation = document.getElementById("eLocation");
-const eMin = document.getElementById("eMin");
-const eNotes = document.getElementById("eNotes");
-const btnSaveEdit = document.getElementById("btnSaveEdit");
-const btnCancelEdit = document.getElementById("btnCancelEdit");
-const editStatusEl = document.getElementById("editStatus");
-const btnScanEditBarcode = document.getElementById("btnScanEditBarcode");
-
-const tabScan = document.getElementById("tabScan");
-const tabLow = document.getElementById("tabLow");
-const tabInv = document.getElementById("tabInv");
-
-const scanView = document.getElementById("scanView");
-const lowView = document.getElementById("lowView");
-const invView = document.getElementById("invView");
-
-const btnLowRefresh = document.getElementById("btnLowRefresh");
-const lowStatus = document.getElementById("lowStatus");
-const lowList = document.getElementById("lowList");
-
-const invSearch = document.getElementById("invSearch");
-const btnInvRefresh = document.getElementById("btnInvRefresh");
-const invStatus = document.getElementById("invStatus");
-const invList = document.getElementById("invList");
-
-const productImg = document.getElementById("productImg");
-const productImgEmpty = document.getElementById("productImgEmpty");
-const editImg = document.getElementById("editImg");
-const editImgEmpty = document.getElementById("editImgEmpty");
-const btnAddImage = document.getElementById("btnAddImage");
-const btnAddImageEdit = document.getElementById("btnAddImageEdit");
-const imgPicker = document.getElementById("imgPicker");
+const loginView = document.getElementById("loginView");			
+const appView = document.getElementById("appView");			
+const pinEl = document.getElementById("pin");			
+const btnLogin = document.getElementById("btnLogin");			
+const btnClearPin = document.getElementById("btnClearPin");			
+const btnLogout = document.getElementById("btnLogout");			
+const loginStatusEl = document.getElementById("loginStatus");			
+			
+const videoEl = document.getElementById("video");			
+const scanStatusEl = document.getElementById("scanStatus");			
+const scanDebugEl = document.getElementById("scanDebug");			
+const lookupStatusEl = document.getElementById("lookupStatus");			
+const moveStatusEl = document.getElementById("moveStatus");			
+const productBoxEl = document.getElementById("productBox");			
+			
+const codeEl = document.getElementById("code");			
+const qtyEl = document.getElementById("qty");			
+const refEl = document.getElementById("ref");			
+const noteEl = document.getElementById("note");			
+			
+const btnStart = document.getElementById("btnStart");			
+const btnStop = document.getElementById("btnStop");			
+const btnTorch = document.getElementById("btnTorch");			
+const btnLookup = document.getElementById("btnLookup");			
+const btnClear = document.getElementById("btnClear");			
+const btnIn = document.getElementById("btnIn");			
+const btnOut = document.getElementById("btnOut");			
+const btnCreate = document.getElementById("btnCreate");			
+const btnEdit = document.getElementById("btnEdit");			
+			
+const scanModeEl = document.getElementById("scanMode");			
+const scanDelayEl = document.getElementById("scanDelay");			
+			
+const scannerWrap = document.getElementById("scannerWrap");			
+			
+const createCard = document.getElementById("createCard");			
+const cSku = document.getElementById("cSku");			
+const cBarcode = document.getElementById("cBarcode");			
+const cName = document.getElementById("cName");			
+const cLocation = document.getElementById("cLocation");			
+const cQty = document.getElementById("cQty");			
+const cMin = document.getElementById("cMin");			
+const cNotes = document.getElementById("cNotes");			
+const btnSaveCreate = document.getElementById("btnSaveCreate");			
+const btnCancelCreate = document.getElementById("btnCancelCreate");			
+const createStatusEl = document.getElementById("createStatus");			
+			
+const editCard = document.getElementById("editCard");			
+const eSku = document.getElementById("eSku");			
+const eBarcode = document.getElementById("eBarcode");			
+const eName = document.getElementById("eName");			
+const eLocation = document.getElementById("eLocation");			
+const eMin = document.getElementById("eMin");			
+const eNotes = document.getElementById("eNotes");			
+const btnSaveEdit = document.getElementById("btnSaveEdit");			
+const btnCancelEdit = document.getElementById("btnCancelEdit");			
+const editStatusEl = document.getElementById("editStatus");			
+const btnScanEditBarcode = document.getElementById("btnScanEditBarcode");			
+			
+const tabScan = document.getElementById("tabScan");			
+const tabLow = document.getElementById("tabLow");			
+const tabInv = document.getElementById("tabInv");			
+			
+const scanView = document.getElementById("scanView");			
+const lowView = document.getElementById("lowView");			
+const invView = document.getElementById("invView");			
+			
+const btnLowRefresh = document.getElementById("btnLowRefresh");			
+const lowStatus = document.getElementById("lowStatus");			
+const lowList = document.getElementById("lowList");			
+			
+const invSearch = document.getElementById("invSearch");			
+const btnInvRefresh = document.getElementById("btnInvRefresh");			
+const invStatus = document.getElementById("invStatus");			
+const invList = document.getElementById("invList");			
+			
+const productImg = document.getElementById("productImg");			
+const productImgEmpty = document.getElementById("productImgEmpty");			
+const editImg = document.getElementById("editImg");			
+const editImgEmpty = document.getElementById("editImgEmpty");			
+const btnAddImage = document.getElementById("btnAddImage");			
+const btnAddImageEdit = document.getElementById("btnAddImageEdit");			
+const imgPicker = document.getElementById("imgPicker");			
 
 /* =========================
    STATE
@@ -258,109 +258,140 @@ function showApp() {
    API
 ========================= */
 
-async function apiGet(path, params = {}) {
-  const url = new URL(path, WEB_APP_URL);
-  Object.entries(params).forEach(([k, v]) => {
-    if (v !== undefined && v !== null) url.searchParams.set(k, String(v));
-  });
-
-  const res = await fetch(url.toString(), { method: "GET" });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  return await res.json();
-}
-
-async function apiPost(action, payload = {}) {
-  const res = await fetch(WEB_APP_URL, {
-    method: "POST",
-    headers: { "Content-Type": "text/plain;charset=utf-8" },
-    body: JSON.stringify({ action, ...payload })
-  });
-
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-  const data = await res.json();
-  if (data && data.ok === false && data.error) throw new Error(data.error);
-  return data;
-}
-
-function gsRunRaw(fnName, ...args) {
-  if (window.google && google.script && google.script.run) {
-    return new Promise((resolve, reject) => {
-      google.script.run
-        .withSuccessHandler(resolve)
-        .withFailureHandler(reject)[fnName](...args);
-    });
-  }
-
-  if (fnName === "loginWithPin") {
-    return apiPost("loginWithPin", { pin: args[0] });
-  }
-
-  if (fnName === "verifySession") {
-    return apiPost("verifySession", { token: args[0] });
-  }
-
-  throw new Error(`Unsupported raw call: ${fnName}`);
-}
-
-function gsRun(fnName, ...args) {
-  if (!SESSION_TOKEN) return Promise.reject(new Error("Not logged in"));
-
-  if (window.google && google.script && google.script.run) {
-    return new Promise((resolve, reject) => {
-      google.script.run
-        .withSuccessHandler(resolve)
-        .withFailureHandler(reject)[fnName](SESSION_TOKEN, ...args);
-    });
-  }
-
-  return apiPost(fnName, { token: SESSION_TOKEN, args });
-}
+async function apiGet(path, params = {}) {				
+const url = new URL(path, WEB_APP_URL);				
+Object.entries(params).forEach(([k, v]) => {				
+if (v !== undefined && v !== null) url.searchParams.set(k, String(v));				
+});				
+				
+const res = await fetch(url.toString(), { method: "GET" });				
+if (!res.ok) throw new Error(`HTTP ${res.status}`);				
+return await res.json();				
+}				
+				
+async function apiPost(action, payload = {}) {				
+const res = await fetch(WEB_APP_URL, {				
+method: "POST",				
+headers: { "Content-Type": "text/plain;charset=utf-8" },				
+body: JSON.stringify({ action, ...payload })				
+});				
+				
+if (!res.ok) throw new Error(`HTTP ${res.status}`);				
+				
+const data = await res.json();				
+if (data && data.ok === false && data.error) throw new Error(data.error);				
+return data;				
+}				
+				
+function gsRunRaw(fnName, ...args) {				
+if (window.google && google.script && google.script.run) {				
+return new Promise((resolve, reject) => {				
+google.script.run				
+.withSuccessHandler(resolve)				
+.withFailureHandler(reject)[fnName](...args);				
+});				
+}				
+				
+if (fnName === "loginWithPin") {				
+return apiPost("loginWithPin", { pin: args[0] });				
+}				
+				
+if (fnName === "verifySession") {				
+return apiPost("verifySession", { token: args[0] });				
+}				
+				
+if (fnName === "logoutSession") {				
+return apiPost("logoutSession", { token: args[0] });				
+}				
+				
+throw new Error(`Unsupported raw call: ${fnName}`);				
+}				
+				
+function gsRun(fnName, ...args) {				
+if (!SESSION_TOKEN) return Promise.reject(new Error("Not logged in"));				
+				
+if (window.google && google.script && google.script.run) {				
+return new Promise((resolve, reject) => {				
+google.script.run				
+.withSuccessHandler(resolve)				
+.withFailureHandler(reject)[fnName](SESSION_TOKEN, ...args);				
+});				
+}				
+				
+return apiPost(fnName, { token: SESSION_TOKEN, args });				
+}				
+				
 
 /* =========================
    LOGIN
 ========================= */
 
-async function doLogin() {
-  const pin = String(pinEl.value || "").trim();
-  if (!/^\d{4}$/.test(pin)) {
-    setStatus(loginStatusEl, "PIN must be 4 digits.", "err");
-    return;
-  }
-
-  setStatus(loginStatusEl, "Logging in…", "muted");
-  btnLogin.disabled = true;
-
-  try {
-    const r = await gsRunRaw("loginWithPin", pin);
-    if (r && r.ok && r.token) {
-      SESSION_TOKEN = r.token;
-      localStorage.setItem("inv_session_token", SESSION_TOKEN);
-      setStatus(loginStatusEl, "Logged in ✅", "ok");
-      showApp();
-      showPage("scan");
-    } else {
-      setStatus(loginStatusEl, "Login failed.", "err");
-    }
-  } catch (e) {
-    setStatus(loginStatusEl, e?.message || String(e), "err");
-  } finally {
-    btnLogin.disabled = false;
-  }
-}
-
-btnLogin.addEventListener("click", doLogin);
-if (btnLogout) {
-  btnLogout.addEventListener("click", doLogout);
-}
-btnClearPin.addEventListener("click", () => {
-  pinEl.value = "";
-  setStatus(loginStatusEl, "", "muted");
-  try { pinEl.focus(); } catch (_) {}
-});
-pinEl.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") doLogin();
-});
+async function doLogin() {				
+const pin = String(pinEl.value || "").trim();				
+if (!/^\d{4}$/.test(pin)) {				
+setStatus(loginStatusEl, "PIN must be 4 digits.", "err");				
+return;				
+}				
+				
+setStatus(loginStatusEl, "Logging in…", "muted");				
+btnLogin.disabled = true;				
+				
+try {				
+const r = await gsRunRaw("loginWithPin", pin);				
+if (r && r.ok && r.token) {				
+SESSION_TOKEN = r.token;				
+localStorage.setItem("inv_session_token", SESSION_TOKEN);				
+setStatus(loginStatusEl, "Logged in ✅", "ok");				
+showApp();				
+showPage("scan");				
+} else {				
+setStatus(loginStatusEl, "Login failed.", "err");				
+}				
+} catch (e) {				
+setStatus(loginStatusEl, e?.message || String(e), "err");				
+} finally {				
+btnLogin.disabled = false;				
+}				
+}				
+				
+async function doLogout() {				
+try {				
+if (SESSION_TOKEN) {				
+try {				
+await gsRunRaw("logoutSession", SESSION_TOKEN);				
+} catch (_) {}				
+}				
+} finally {				
+SESSION_TOKEN = "";				
+localStorage.removeItem("inv_session_token");				
+				
+try { stopScan(); } catch (_) {}				
+				
+currentProduct = null;				
+codeEl.value = "";				
+qtyEl.value = "";				
+refEl.value = "";				
+noteEl.value = "";				
+				
+resetProductUI();				
+showLogin("Logged out.");				
+}				
+}				
+				
+btnLogin.addEventListener("click", doLogin);				
+btnClearPin.addEventListener("click", () => {				
+pinEl.value = "";				
+setStatus(loginStatusEl, "", "muted");				
+try { pinEl.focus(); } catch (_) {}				
+});				
+pinEl.addEventListener("keydown", (e) => {				
+if (e.key === "Enter") doLogin();				
+});				
+				
+if (btnLogout) {				
+btnLogout.addEventListener("click", doLogout);				
+}				
+				
 
 /* =========================
    LOGOUT
