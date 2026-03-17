@@ -20,6 +20,7 @@ const pinEl = document.getElementById("pin");
 const btnLogin = document.getElementById("btnLogin");
 const btnClearPin = document.getElementById("btnClearPin");
 const loginStatusEl = document.getElementById("loginStatus");
+const btnLogout = document.getElementById("btnLogout");
 
 const videoEl = document.getElementById("video");
 const scanStatusEl = document.getElementById("scanStatus");
@@ -349,6 +350,9 @@ async function doLogin() {
 }
 
 btnLogin.addEventListener("click", doLogin);
+if (btnLogout) {
+  btnLogout.addEventListener("click", doLogout);
+}
 btnClearPin.addEventListener("click", () => {
   pinEl.value = "";
   setStatus(loginStatusEl, "", "muted");
@@ -357,6 +361,41 @@ btnClearPin.addEventListener("click", () => {
 pinEl.addEventListener("keydown", (e) => {
   if (e.key === "Enter") doLogin();
 });
+
+/* =========================
+   LOGOUT
+========================= */
+
+async function doLogout() {
+  try {
+    if (SESSION_TOKEN) {
+      try {
+        if (window.google && google.script && google.script.run) {
+          await gsRunRaw("logoutSession", SESSION_TOKEN);
+        } else {
+          await apiPost("logoutSession", { token: SESSION_TOKEN });
+        }
+      } catch (_) {
+        // ignore backend errors
+      }
+    }
+  } finally {
+
+    SESSION_TOKEN = "";
+    localStorage.removeItem("inv_session_token");
+
+    try { stopScan(); } catch (_) {}
+
+    resetProductUI();
+
+    codeEl.value = "";
+    qtyEl.value = "";
+    refEl.value = "";
+    noteEl.value = "";
+
+    showLogin("Logged out.");
+  }
+}
 
 /* =========================
    NAV
