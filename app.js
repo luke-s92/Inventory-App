@@ -6,102 +6,100 @@ const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxNvby0oATUZBVxg9Vc
 /* =========================
    BASIC SETTINGS
 ========================= */
-
 const INITIAL_PAGE = "scan";
 const IS_IOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
 /* =========================
    ELEMENTS
 ========================= */
+const loginView = document.getElementById("loginView");
+const appView = document.getElementById("appView");
+const pinEl = document.getElementById("pin");
+const btnLogin = document.getElementById("btnLogin");
+const btnClearPin = document.getElementById("btnClearPin");
+const btnLogout = document.getElementById("btnLogout");
+const loginStatusEl = document.getElementById("loginStatus");
 
-const loginView = document.getElementById("loginView");			
-const appView = document.getElementById("appView");			
-const pinEl = document.getElementById("pin");			
-const btnLogin = document.getElementById("btnLogin");			
-const btnClearPin = document.getElementById("btnClearPin");			
-const btnLogout = document.getElementById("btnLogout");			
-const loginStatusEl = document.getElementById("loginStatus");			
-			
-const videoEl = document.getElementById("video");			
-const scanStatusEl = document.getElementById("scanStatus");			
-const scanDebugEl = document.getElementById("scanDebug");			
-const lookupStatusEl = document.getElementById("lookupStatus");			
-const moveStatusEl = document.getElementById("moveStatus");			
-const productBoxEl = document.getElementById("productBox");			
-			
-const codeEl = document.getElementById("code");			
-const qtyEl = document.getElementById("qty");			
-const refEl = document.getElementById("ref");			
-const noteEl = document.getElementById("note");			
-			
-const btnStart = document.getElementById("btnStart");			
-const btnStop = document.getElementById("btnStop");			
-const btnTorch = document.getElementById("btnTorch");			
-const btnLookup = document.getElementById("btnLookup");			
-const btnClear = document.getElementById("btnClear");			
-const btnIn = document.getElementById("btnIn");			
-const btnOut = document.getElementById("btnOut");			
-const btnCreate = document.getElementById("btnCreate");			
-const btnEdit = document.getElementById("btnEdit");			
-			
-const scanModeEl = document.getElementById("scanMode");			
-const scanDelayEl = document.getElementById("scanDelay");			
-			
-const scannerWrap = document.getElementById("scannerWrap");			
-			
-const createCard = document.getElementById("createCard");			
-const cSku = document.getElementById("cSku");			
-const cBarcode = document.getElementById("cBarcode");			
-const cName = document.getElementById("cName");			
-const cLocation = document.getElementById("cLocation");			
-const cQty = document.getElementById("cQty");			
-const cMin = document.getElementById("cMin");			
-const cNotes = document.getElementById("cNotes");			
-const btnSaveCreate = document.getElementById("btnSaveCreate");			
-const btnCancelCreate = document.getElementById("btnCancelCreate");			
-const createStatusEl = document.getElementById("createStatus");			
-			
-const editCard = document.getElementById("editCard");			
-const eSku = document.getElementById("eSku");			
-const eBarcode = document.getElementById("eBarcode");			
-const eName = document.getElementById("eName");			
-const eLocation = document.getElementById("eLocation");			
-const eMin = document.getElementById("eMin");			
-const eNotes = document.getElementById("eNotes");			
-const btnSaveEdit = document.getElementById("btnSaveEdit");			
-const btnCancelEdit = document.getElementById("btnCancelEdit");			
-const editStatusEl = document.getElementById("editStatus");			
-const btnScanEditBarcode = document.getElementById("btnScanEditBarcode");			
-			
-const tabScan = document.getElementById("tabScan");			
-const tabLow = document.getElementById("tabLow");			
-const tabInv = document.getElementById("tabInv");			
-			
-const scanView = document.getElementById("scanView");			
-const lowView = document.getElementById("lowView");			
-const invView = document.getElementById("invView");			
-			
-const btnLowRefresh = document.getElementById("btnLowRefresh");			
-const lowStatus = document.getElementById("lowStatus");			
-const lowList = document.getElementById("lowList");			
-			
-const invSearch = document.getElementById("invSearch");			
-const btnInvRefresh = document.getElementById("btnInvRefresh");			
-const invStatus = document.getElementById("invStatus");			
-const invList = document.getElementById("invList");			
-			
-const productImg = document.getElementById("productImg");			
-const productImgEmpty = document.getElementById("productImgEmpty");			
-const editImg = document.getElementById("editImg");			
-const editImgEmpty = document.getElementById("editImgEmpty");			
-const btnAddImage = document.getElementById("btnAddImage");			
-const btnAddImageEdit = document.getElementById("btnAddImageEdit");			
-const imgPicker = document.getElementById("imgPicker");			
+const videoEl = document.getElementById("video");
+const scanStatusEl = document.getElementById("scanStatus");
+const scanDebugEl = document.getElementById("scanDebug");
+const lookupStatusEl = document.getElementById("lookupStatus");
+const moveStatusEl = document.getElementById("moveStatus");
+const productBoxEl = document.getElementById("productBox");
+
+const codeEl = document.getElementById("code");
+const qtyEl = document.getElementById("qty");
+const refEl = document.getElementById("ref");
+const noteEl = document.getElementById("note");
+
+const btnStart = document.getElementById("btnStart");
+const btnStop = document.getElementById("btnStop");
+const btnTorch = document.getElementById("btnTorch");
+const btnLookup = document.getElementById("btnLookup");
+const btnClear = document.getElementById("btnClear");
+const btnIn = document.getElementById("btnIn");
+const btnOut = document.getElementById("btnOut");
+const btnCreate = document.getElementById("btnCreate");
+const btnEdit = document.getElementById("btnEdit");
+
+const scanModeEl = document.getElementById("scanMode");
+const scanDelayEl = document.getElementById("scanDelay");
+
+const scannerWrap = document.getElementById("scannerWrap");
+
+const createCard = document.getElementById("createCard");
+const cSku = document.getElementById("cSku");
+const cBarcode = document.getElementById("cBarcode");
+const cName = document.getElementById("cName");
+const cLocation = document.getElementById("cLocation");
+const cQty = document.getElementById("cQty");
+const cMin = document.getElementById("cMin");
+const cNotes = document.getElementById("cNotes");
+const btnSaveCreate = document.getElementById("btnSaveCreate");
+const btnCancelCreate = document.getElementById("btnCancelCreate");
+const createStatusEl = document.getElementById("createStatus");
+
+const editCard = document.getElementById("editCard");
+const eSku = document.getElementById("eSku");
+const eBarcode = document.getElementById("eBarcode");
+const eName = document.getElementById("eName");
+const eLocation = document.getElementById("eLocation");
+const eMin = document.getElementById("eMin");
+const eNotes = document.getElementById("eNotes");
+const btnSaveEdit = document.getElementById("btnSaveEdit");
+const btnCancelEdit = document.getElementById("btnCancelEdit");
+const editStatusEl = document.getElementById("editStatus");
+const btnScanEditBarcode = document.getElementById("btnScanEditBarcode");
+
+const tabScan = document.getElementById("tabScan");
+const tabLow = document.getElementById("tabLow");
+const tabInv = document.getElementById("tabInv");
+
+const scanView = document.getElementById("scanView");
+const lowView = document.getElementById("lowView");
+const invView = document.getElementById("invView");
+
+const btnLowRefresh = document.getElementById("btnLowRefresh");
+const btnLowExportPdf = document.getElementById("btnLowExportPdf");
+const lowStatus = document.getElementById("lowStatus");
+const lowList = document.getElementById("lowList");
+
+const invSearch = document.getElementById("invSearch");
+const btnInvRefresh = document.getElementById("btnInvRefresh");
+const invStatus = document.getElementById("invStatus");
+const invList = document.getElementById("invList");
+
+const productImg = document.getElementById("productImg");
+const productImgEmpty = document.getElementById("productImgEmpty");
+const editImg = document.getElementById("editImg");
+const editImgEmpty = document.getElementById("editImgEmpty");
+const btnAddImage = document.getElementById("btnAddImage");
+const btnAddImageEdit = document.getElementById("btnAddImageEdit");
+const imgPicker = document.getElementById("imgPicker");
 
 /* =========================
    STATE
 ========================= */
-
 let SESSION_TOKEN = localStorage.getItem("inv_session_token") || "";
 
 let stream = null;
@@ -127,7 +125,6 @@ let imgTarget = "PRODUCT";
 /* =========================
    UTIL
 ========================= */
-
 document.addEventListener("gesturestart", (e) => e.preventDefault());
 document.addEventListener("dblclick", (e) => e.preventDefault(), { passive: false });
 
@@ -257,161 +254,108 @@ function showApp() {
 /* =========================
    API
 ========================= */
+async function apiGet(path, params = {}) {
+  const url = new URL(path, WEB_APP_URL);
+  Object.entries(params).forEach(([k, v]) => {
+    if (v !== undefined && v !== null) url.searchParams.set(k, String(v));
+  });
 
-async function apiGet(path, params = {}) {				
-const url = new URL(path, WEB_APP_URL);				
-Object.entries(params).forEach(([k, v]) => {				
-if (v !== undefined && v !== null) url.searchParams.set(k, String(v));				
-});				
-				
-const res = await fetch(url.toString(), { method: "GET" });				
-if (!res.ok) throw new Error(`HTTP ${res.status}`);				
-return await res.json();				
-}				
-				
-async function apiPost(action, payload = {}) {				
-const res = await fetch(WEB_APP_URL, {				
-method: "POST",				
-headers: { "Content-Type": "text/plain;charset=utf-8" },				
-body: JSON.stringify({ action, ...payload })				
-});				
-				
-if (!res.ok) throw new Error(`HTTP ${res.status}`);				
-				
-const data = await res.json();				
-if (data && data.ok === false && data.error) throw new Error(data.error);				
-return data;				
-}				
-				
-function gsRunRaw(fnName, ...args) {				
-if (window.google && google.script && google.script.run) {				
-return new Promise((resolve, reject) => {				
-google.script.run				
-.withSuccessHandler(resolve)				
-.withFailureHandler(reject)[fnName](...args);				
-});				
-}				
-				
-if (fnName === "loginWithPin") {				
-return apiPost("loginWithPin", { pin: args[0] });				
-}				
-				
-if (fnName === "verifySession") {				
-return apiPost("verifySession", { token: args[0] });				
-}				
-				
-if (fnName === "logoutSession") {				
-return apiPost("logoutSession", { token: args[0] });				
-}				
-				
-throw new Error(`Unsupported raw call: ${fnName}`);				
-}				
-				
-function gsRun(fnName, ...args) {				
-if (!SESSION_TOKEN) return Promise.reject(new Error("Not logged in"));				
-				
-if (window.google && google.script && google.script.run) {				
-return new Promise((resolve, reject) => {				
-google.script.run				
-.withSuccessHandler(resolve)				
-.withFailureHandler(reject)[fnName](SESSION_TOKEN, ...args);				
-});				
-}				
-				
-return apiPost(fnName, { token: SESSION_TOKEN, args });				
-}				
-				
+  const res = await fetch(url.toString(), { method: "GET" });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return await res.json();
+}
+
+async function apiPost(action, payload = {}) {
+  const res = await fetch(WEB_APP_URL, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify({ action, ...payload })
+  });
+
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+  const data = await res.json();
+  if (data && data.ok === false && data.error) throw new Error(data.error);
+  return data;
+}
+
+function gsRunRaw(fnName, ...args) {
+  if (window.google && google.script && google.script.run) {
+    return new Promise((resolve, reject) => {
+      google.script.run
+        .withSuccessHandler(resolve)
+        .withFailureHandler(reject)[fnName](...args);
+    });
+  }
+
+  if (fnName === "loginWithPin") {
+    return apiPost("loginWithPin", { pin: args[0] });
+  }
+
+  if (fnName === "verifySession") {
+    return apiPost("verifySession", { token: args[0] });
+  }
+
+  if (fnName === "logoutSession") {
+    return apiPost("logoutSession", { token: args[0] });
+  }
+
+  throw new Error(`Unsupported raw call: ${fnName}`);
+}
+
+function gsRun(fnName, ...args) {
+  if (!SESSION_TOKEN) return Promise.reject(new Error("Not logged in"));
+
+  if (window.google && google.script && google.script.run) {
+    return new Promise((resolve, reject) => {
+      google.script.run
+        .withSuccessHandler(resolve)
+        .withFailureHandler(reject)[fnName](SESSION_TOKEN, ...args);
+    });
+  }
+
+  return apiPost(fnName, { token: SESSION_TOKEN, args });
+}
 
 /* =========================
-   LOGIN
+   LOGIN / LOGOUT
 ========================= */
+async function doLogin() {
+  const pin = String(pinEl.value || "").trim();
+  if (!/^\d{4}$/.test(pin)) {
+    setStatus(loginStatusEl, "PIN must be 4 digits.", "err");
+    return;
+  }
 
-async function doLogin() {				
-const pin = String(pinEl.value || "").trim();				
-if (!/^\d{4}$/.test(pin)) {				
-setStatus(loginStatusEl, "PIN must be 4 digits.", "err");				
-return;				
-}				
-				
-setStatus(loginStatusEl, "Logging in…", "muted");				
-btnLogin.disabled = true;				
-				
-try {				
-const r = await gsRunRaw("loginWithPin", pin);				
-if (r && r.ok && r.token) {				
-SESSION_TOKEN = r.token;				
-localStorage.setItem("inv_session_token", SESSION_TOKEN);				
-setStatus(loginStatusEl, "Logged in ✅", "ok");				
-showApp();				
-showPage("scan");				
-} else {				
-setStatus(loginStatusEl, "Login failed.", "err");				
-}				
-} catch (e) {				
-setStatus(loginStatusEl, e?.message || String(e), "err");				
-} finally {				
-btnLogin.disabled = false;				
-}				
-}				
-				
-async function doLogout() {				
-try {				
-if (SESSION_TOKEN) {				
-try {				
-await gsRunRaw("logoutSession", SESSION_TOKEN);				
-} catch (_) {}				
-}				
-} finally {				
-SESSION_TOKEN = "";				
-localStorage.removeItem("inv_session_token");				
-				
-try { stopScan(); } catch (_) {}				
-				
-currentProduct = null;				
-codeEl.value = "";				
-qtyEl.value = "";				
-refEl.value = "";				
-noteEl.value = "";				
-				
-resetProductUI();				
-showLogin("Logged out.");				
-}				
-}				
-				
-btnLogin.addEventListener("click", doLogin);				
-btnClearPin.addEventListener("click", () => {				
-pinEl.value = "";				
-setStatus(loginStatusEl, "", "muted");				
-try { pinEl.focus(); } catch (_) {}				
-});				
-pinEl.addEventListener("keydown", (e) => {				
-if (e.key === "Enter") doLogin();				
-});				
-				
-if (btnLogout) {				
-btnLogout.addEventListener("click", doLogout);				
-}				
-				
+  setStatus(loginStatusEl, "Logging in…", "muted");
+  btnLogin.disabled = true;
 
-/* =========================
-   LOGOUT
-========================= */
+  try {
+    const r = await gsRunRaw("loginWithPin", pin);
+    if (r && r.ok && r.token) {
+      SESSION_TOKEN = r.token;
+      localStorage.setItem("inv_session_token", SESSION_TOKEN);
+      setStatus(loginStatusEl, "Logged in ✅", "ok");
+      showApp();
+      showPage("scan");
+    } else {
+      setStatus(loginStatusEl, "Login failed.", "err");
+    }
+  } catch (e) {
+    setStatus(loginStatusEl, e?.message || String(e), "err");
+  } finally {
+    btnLogin.disabled = false;
+  }
+}
 
 async function doLogout() {
   try {
     if (SESSION_TOKEN) {
       try {
-        if (window.google && google.script && google.script.run) {
-          await gsRunRaw("logoutSession", SESSION_TOKEN);
-        } else {
-          await apiPost("logoutSession", { token: SESSION_TOKEN });
-        }
-      } catch (_) {
-        // ignore backend errors
-      }
+        await gsRunRaw("logoutSession", SESSION_TOKEN);
+      } catch (_) {}
     }
   } finally {
-
     SESSION_TOKEN = "";
     localStorage.removeItem("inv_session_token");
 
@@ -428,10 +372,23 @@ async function doLogout() {
   }
 }
 
+btnLogin.addEventListener("click", doLogin);
+btnClearPin.addEventListener("click", () => {
+  pinEl.value = "";
+  setStatus(loginStatusEl, "", "muted");
+  try { pinEl.focus(); } catch (_) {}
+});
+pinEl.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") doLogin();
+});
+
+if (btnLogout) {
+  btnLogout.addEventListener("click", doLogout);
+}
+
 /* =========================
    NAV
 ========================= */
-
 function showPage(page) {
   const p = (page || "scan").toLowerCase();
   const scanOn = p === "scan";
@@ -458,7 +415,6 @@ tabInv.addEventListener("click", () => showPage("inv"));
 /* =========================
    IMAGE HELPERS
 ========================= */
-
 async function tryLoadImageFallback_(sku, target) {
   const cleanSku = String(sku || "").trim();
   if (!cleanSku) return false;
@@ -527,7 +483,6 @@ function renderImageForProduct(p) {
 /* =========================
    PRODUCT UI
 ========================= */
-
 function renderProduct(p) {
   renderImageForProduct(p);
 
@@ -576,7 +531,6 @@ function getQtyOrThrow() {
 /* =========================
    LOOKUP / CREATE / EDIT
 ========================= */
-
 async function doLookup() {
   const code = codeEl.value.trim();
   if (!code) {
@@ -801,7 +755,6 @@ async function doMove(type) {
 /* =========================
    CAMERA
 ========================= */
-
 async function initTorchCapability() {
   torchCapable = false;
   torchOn = false;
@@ -1126,7 +1079,6 @@ function stopScan() {
 /* =========================
    LOW STOCK
 ========================= */
-
 function renderLowStock(items) {
   if (!items || !items.length) {
     lowList.innerHTML = "";
@@ -1180,10 +1132,143 @@ async function doLowRefresh() {
   }
 }
 
+async function exportLowStockPdf() {
+  try {
+    setStatus(lowStatus, "Preparing PDF…", "muted");
+
+    const rows = await gsRun("getLowStockItems");
+    const items = Array.isArray(rows) ? rows : [];
+
+    if (!items.length) {
+      setStatus(lowStatus, "No low stock items to export.", "err");
+      return;
+    }
+
+    const now = new Date();
+    const printedAt = now.toLocaleString();
+
+    const htmlRows = items.map(it => {
+      const qty = Number(it.qtyOnHand || 0);
+      const min = Number(it.minQty || 0);
+      const delta = qty - min;
+
+      return `
+        <tr>
+          <td>${escapeHtml(it.name || "Unnamed Product")}</td>
+          <td>${escapeHtml(it.sku || "")}</td>
+          <td>${escapeHtml(it.barcode || "")}</td>
+          <td>${escapeHtml(it.location || "")}</td>
+          <td style="text-align:right;">${qty}</td>
+          <td style="text-align:right;">${min}</td>
+          <td style="text-align:right;">${delta}</td>
+        </tr>
+      `;
+    }).join("");
+
+    const printHtml = `
+      <!doctype html>
+      <html>
+      <head>
+        <meta charset="utf-8" />
+        <title>Low Stock Report</title>
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            margin: 24px;
+            color: #111;
+          }
+          h1 {
+            margin: 0 0 8px 0;
+            font-size: 24px;
+          }
+          .meta {
+            margin-bottom: 18px;
+            color: #555;
+            font-size: 14px;
+          }
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+          }
+          th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            vertical-align: top;
+          }
+          th {
+            background: #f3f3f3;
+            text-align: left;
+          }
+          .footer {
+            margin-top: 16px;
+            font-size: 12px;
+            color: #666;
+          }
+          @media print {
+            body {
+              margin: 12mm;
+            }
+          }
+        </style>
+      </head>
+      <body>
+        <h1>Low Stock Report</h1>
+        <div class="meta">Generated: ${escapeHtml(printedAt)}<br>Total items: ${items.length}</div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>SKU</th>
+              <th>Barcode</th>
+              <th>Location</th>
+              <th>On Hand</th>
+              <th>Min Qty</th>
+              <th>Delta</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${htmlRows}
+          </tbody>
+        </table>
+
+        <div class="footer">Use your browser print dialog and choose “Save as PDF”.</div>
+      </body>
+      </html>
+    `;
+
+    const win = window.open("", "_blank");
+    if (!win) {
+      setStatus(lowStatus, "Popup blocked. Allow popups and try again.", "err");
+      return;
+    }
+
+    win.document.open();
+    win.document.write(printHtml);
+    win.document.close();
+
+    win.focus();
+    setTimeout(() => {
+      try { win.print(); } catch (_) {}
+    }, 400);
+
+    setStatus(lowStatus, "PDF view opened ✅", "ok");
+  } catch (e) {
+    const msg = e?.message || String(e);
+    if (/not logged in|session expired/i.test(msg)) {
+      SESSION_TOKEN = "";
+      localStorage.removeItem("inv_session_token");
+      showLogin("Session expired. Please log in again.");
+      return;
+    }
+    setStatus(lowStatus, msg, "err");
+  }
+}
+
 /* =========================
    INVENTORY
 ========================= */
-
 function renderInventory(items) {
   if (!items || !items.length) {
     invList.innerHTML = "";
@@ -1238,7 +1323,6 @@ async function doInvRefresh() {
 /* =========================
    IMAGE UPLOAD
 ========================= */
-
 function openImagePicker(target) {
   if (!currentProduct || !currentProduct.sku) return;
   imgTarget = target || "PRODUCT";
@@ -1294,7 +1378,6 @@ async function compressImageDataUrl_(dataUrl, maxSide, quality) {
 /* =========================
    EVENTS
 ========================= */
-
 btnStart.addEventListener("click", () => {
   scanTarget = "DEFAULT";
   startScan();
@@ -1347,6 +1430,10 @@ btnIn.addEventListener("click", () => doMove("IN"));
 btnOut.addEventListener("click", () => doMove("OUT"));
 
 btnLowRefresh.addEventListener("click", doLowRefresh);
+if (btnLowExportPdf) {
+  btnLowExportPdf.addEventListener("click", exportLowStockPdf);
+}
+
 lowList.addEventListener("click", async (ev) => {
   const el = ev.target.closest(".listItem");
   if (!el) return;
@@ -1426,7 +1513,6 @@ imgPicker.addEventListener("change", async () => {
 /* =========================
    BOOT
 ========================= */
-
 (async function boot() {
   if (SESSION_TOKEN) {
     try {
@@ -1444,9 +1530,11 @@ imgPicker.addEventListener("change", async () => {
         return;
       }
     } catch (_) {}
+
     SESSION_TOKEN = "";
     localStorage.removeItem("inv_session_token");
   }
 
   showLogin("");
 })();
+
