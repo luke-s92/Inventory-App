@@ -513,6 +513,34 @@ function renderProduct(p) {
   editCard.style.display = "none";
 }
 
+function resetProductUI() {
+  currentProduct = null;
+
+  productBoxEl.textContent = "No product loaded.";
+
+  btnIn.disabled = true;
+  btnOut.disabled = true;
+  btnEdit.disabled = true;
+  btnAddImage.disabled = true;
+
+  if (btnCreate) btnCreate.style.display = "none";
+
+  createCard.style.display = "none";
+  editCard.style.display = "none";
+
+  setStatus(moveStatusEl, "", "muted");
+  setStatus(editStatusEl, "", "muted");
+
+  productImg.removeAttribute("src");
+  productImg.style.display = "none";
+  productImgEmpty.style.display = "block";
+
+  editImg.removeAttribute("src");
+  editImg.style.display = "none";
+  editImgEmpty.style.display = "block";
+}
+
+
 
 /* =========================
    LOOKUP / CREATE / EDIT
