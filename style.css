@@ -76,6 +76,8 @@ input:focus, textarea:focus, select:focus { outline: none; }
   cursor: pointer;
   font-weight: 900;
   font-size: var(--fs-btn);
+  display: block;
+  box-sizing: border-box;
 }
 
 .btn:disabled {
@@ -101,6 +103,18 @@ input:focus, textarea:focus, select:focus { outline: none; }
   .grid2 {
     grid-template-columns: 1fr 1fr;
   }
+}
+
+.createRow {
+  display: block;
+  width: 100%;
+}
+
+#btnCreate {
+  display: block;
+  width: 100%;
+  visibility: visible;
+  opacity: 1;
 }
 
 .input {
@@ -141,7 +155,7 @@ input:focus, textarea:focus, select:focus { outline: none; }
   border-color: #111;
 }
 
-/* NEW: scanner settings layout */
+/* scanner settings layout */
 .scanSettings {
   display: grid;
   grid-template-columns: 1fr;
@@ -334,7 +348,7 @@ td:first-child {
   font-size: var(--fs-muted);
 }
 
-/* NEW: tighter controls on small phones */
+/* tighter controls on small phones */
 @media (max-width: 480px) {
   .card {
     padding: 16px;
