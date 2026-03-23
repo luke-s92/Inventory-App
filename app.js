@@ -494,7 +494,7 @@ function renderProduct(p) {
 
   productBoxEl.innerHTML = `
     <table>
-      <tr><td>SKU</td><td><b>${escapeHtml(p.sku)}</b></td></tr>
+      <tr><td>SKU</td><td><b>${escapeHtml(p.sku || "")}</b></td></tr>
       <tr><td>Barcode</td><td>${escapeHtml(p.barcode || "")}</td></tr>
       <tr><td>Name</td><td>${escapeHtml(p.name || "")}</td></tr>
       <tr><td>Location</td><td>${escapeHtml(p.location || "")}</td></tr>
