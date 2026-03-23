@@ -338,6 +338,7 @@ async function doLogin() {
       setStatus(loginStatusEl, "Logged in ✅", "ok");
       showApp();
       showPage("scan");
+      btnCreate.style.display = "block";
     } else {
       setStatus(loginStatusEl, "Login failed.", "err");
     }
@@ -513,7 +514,7 @@ function resetProductUI() {
   btnOut.disabled = true;
   btnEdit.disabled = true;
   btnAddImage.disabled = true;
-  btnCreate.style.display = "none";
+  btnCreate.style.display = "block";
   createCard.style.display = "none";
   editCard.style.display = "none";
   setStatus(moveStatusEl, "", "muted");
@@ -528,14 +529,33 @@ function getQtyOrThrow() {
   return q;
 }
 
+function openBlankCreateForm() {
+  cSku.value = autoSkuFromBarcodeOrTime("");
+  cBarcode.value = "";
+  cName.value = "";
+  cLocation.value = "";
+  cQty.value = "";
+  cMin.value = "";
+  cNotes.value = "";
+
+  createCard.style.display = "block";
+  editCard.style.display = "none";
+  btnCreate.style.display = "none";
+
+  setStatus(createStatusEl, "Manual product entry. Barcode can be left blank.", "muted");
+  setStatus(lookupStatusEl, "Create form opened ↓", "ok");
+
+  window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+}
+
 /* =========================
    LOOKUP / CREATE / EDIT
 ========================= */
 async function doLookup() {
   const code = codeEl.value.trim();
+
   if (!code) {
-    setStatus(lookupStatusEl, "Scan or enter a code first.", "err");
-    resetProductUI();
+    openBlankCreateForm();
     return;
   }
 
@@ -569,8 +589,9 @@ async function doLookup() {
 
 function openCreateFromCodeBox() {
   const codeNow = (codeEl.value || "").trim();
+
   if (!codeNow) {
-    setStatus(lookupStatusEl, "Scan or type a code first.", "err");
+    openBlankCreateForm();
     return;
   }
 
@@ -593,7 +614,8 @@ function openCreateFromCodeBox() {
 
   createCard.style.display = "block";
   editCard.style.display = "none";
-  setStatus(createStatusEl, "Enter Name (required). SKU auto-filled.", "muted");
+  btnCreate.style.display = "none";
+  setStatus(createStatusEl, scannedBarcode ? "Enter Name (required). SKU auto-filled." : "Manual product entry. Barcode can be left blank.", "muted");
   setStatus(lookupStatusEl, "Create form opened ↓", "ok");
 
   window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
@@ -1392,6 +1414,7 @@ btnCreate.addEventListener("click", openCreateFromCodeBox);
 btnSaveCreate.addEventListener("click", saveCreate);
 btnCancelCreate.addEventListener("click", () => {
   createCard.style.display = "none";
+  btnCreate.style.display = "block";
   setStatus(createStatusEl, "", "muted");
 });
 
@@ -1421,6 +1444,7 @@ btnClear.addEventListener("click", () => {
   setStatus(lookupStatusEl, "", "muted");
   setStatus(moveStatusEl, "", "muted");
   resetProductUI();
+  btnCreate.style.display = "block";
   setStatus(scanStatusEl, "Camera idle.", "muted");
   scanDebugEl.textContent = "";
   scanTarget = "DEFAULT";
@@ -1527,6 +1551,7 @@ imgPicker.addEventListener("change", async () => {
       if (valid && valid.ok) {
         showApp();
         showPage(INITIAL_PAGE);
+        btnCreate.style.display = "block";
         return;
       }
     } catch (_) {}
@@ -1536,5 +1561,7 @@ imgPicker.addEventListener("change", async () => {
   }
 
   showLogin("");
+})();
+
 })();
 
