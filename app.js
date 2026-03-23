@@ -1186,23 +1186,20 @@ async function exportLowStockPdf() {
       return;
     }
 
-    const now = new Date();
-    const printedAt = now.toLocaleString();
+    const printedAt = new Date().toLocaleString();
 
     const htmlRows = items.map(it => {
       const qty = Number(it.qtyOnHand || 0);
       const min = Number(it.minQty || 0);
-      const delta = qty - min;
 
       return `
         <tr>
           <td>${escapeHtml(it.name || "Unnamed Product")}</td>
           <td>${escapeHtml(it.sku || "")}</td>
-          <td>${escapeHtml(it.barcode || "")}</td>
           <td>${escapeHtml(it.location || "")}</td>
           <td style="text-align:right;">${qty}</td>
           <td style="text-align:right;">${min}</td>
-          <td style="text-align:right;">${delta}</td>
+          <td>${escapeHtml(it.notes || "")}</td>
         </tr>
       `;
     }).join("");
@@ -1242,6 +1239,9 @@ async function exportLowStockPdf() {
             background: #f3f3f3;
             text-align: left;
           }
+          .num {
+            text-align: right;
+          }
           .footer {
             margin-top: 16px;
             font-size: 12px;
@@ -1263,11 +1263,10 @@ async function exportLowStockPdf() {
             <tr>
               <th>Name</th>
               <th>SKU</th>
-              <th>Barcode</th>
               <th>Location</th>
-              <th>On Hand</th>
+              <th>Qty On Hand</th>
               <th>Min Qty</th>
-              <th>Delta</th>
+              <th>Notes</th>
             </tr>
           </thead>
           <tbody>
@@ -1307,6 +1306,7 @@ async function exportLowStockPdf() {
     setStatus(lowStatus, msg, "err");
   }
 }
+
 
 /* =========================
    INVENTORY
