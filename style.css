@@ -125,6 +125,21 @@ input:focus, textarea:focus, select:focus { outline: none; }
   box-sizing: border-box;
 }
 
+.topBar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: #fff;
+  padding-top: max(14px, env(safe-area-inset-top));
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+#btnLogout {
+  width: 100%;
+}
+
 .tabs {
   position: sticky;
   top: 0;
