@@ -252,10 +252,16 @@ function showApp() {
   appView.style.display = "block";
 }
 
-function setCreateButtonVisible(show) {
-  if (!btnCreate) return;
-  btnCreate.style.display = show ? "block" : "none";
+function setCreateButtonVisible(showNotFoundButton, showManualButton) {
+  if (btnCreate) {
+    btnCreate.style.display = showNotFoundButton ? "block" : "none";
+  }
+
+  if (btnManualCreate) {
+    btnManualCreate.style.display = showManualButton ? "block" : "none";
+  }
 }
+
 
 /* =========================
    API
@@ -490,34 +496,6 @@ function renderImageForProduct(p) {
 /* =========================
    PRODUCT UI
 ========================= */
-function renderProduct(p) {
-  renderImageForProduct(p);
-
-  productBoxEl.innerHTML = `
-    <table>
-      <tr><td>SKU</td><td><b>${escapeHtml(p.sku || "")}</b></td></tr>
-      <tr><td>Barcode</td><td>${escapeHtml(p.barcode || "")}</td></tr>
-      <tr><td>Name</td><td>${escapeHtml(p.name || "")}</td></tr>
-      <tr><td>Location</td><td>${escapeHtml(p.location || "")}</td></tr>
-      <tr><td>On Hand</td><td><b>${Number(p.qtyOnHand || 0)}</b></td></tr>
-      <tr><td>Min Qty</td><td>${Number(p.minQty || 0)}</td></tr>
-      <tr><td>Notes</td><td>${escapeHtml(p.notes || "")}</td></tr>
-    </table>
-  `;
-
-  btnIn.disabled = false;
-  btnOut.disabled = false;
-  btnEdit.disabled = false;
-  btnAddImage.disabled = false;
-
-  if (btnCreate) btnCreate.style.display = "none";
-  if (btnManualCreate) btnManualCreate.style.display = "none";
-
-  createCard.style.display = "none";
-  editCard.style.display = "none";
-}
-
-
 function resetProductUI() {
   currentProduct = null;
 
@@ -527,9 +505,6 @@ function resetProductUI() {
   btnOut.disabled = true;
   btnEdit.disabled = true;
   btnAddImage.disabled = true;
-
-  if (btnCreate) btnCreate.style.display = "none";
-  if (btnManualCreate) btnManualCreate.style.display = "block";
 
   createCard.style.display = "none";
   editCard.style.display = "none";
@@ -544,7 +519,43 @@ function resetProductUI() {
   editImg.removeAttribute("src");
   editImg.style.display = "none";
   editImgEmpty.style.display = "block";
+
+  // default state after clear/reset:
+  // manual create visible, not-found create hidden
+  setCreateButtonVisible(false, true);
 }
+
+
+
+function resetProductUI() {
+  currentProduct = null;
+
+  productBoxEl.textContent = "No product loaded.";
+
+  btnIn.disabled = true;
+  btnOut.disabled = true;
+  btnEdit.disabled = true;
+  btnAddImage.disabled = true;
+
+  createCard.style.display = "none";
+  editCard.style.display = "none";
+
+  setStatus(moveStatusEl, "", "muted");
+  setStatus(editStatusEl, "", "muted");
+
+  productImg.removeAttribute("src");
+  productImg.style.display = "none";
+  productImgEmpty.style.display = "block";
+
+  editImg.removeAttribute("src");
+  editImg.style.display = "none";
+  editImgEmpty.style.display = "block";
+
+  // default state after clear/reset:
+  // manual create visible, not-found create hidden
+  setCreateButtonVisible(false, true);
+}
+
 
 function getQtyOrThrow() {
   const q = Number(qtyEl.value);
@@ -577,16 +588,24 @@ async function doLookup() {
 
   try {
     const r = await gsRun("lookupCode", code);
+
     if (!r || !r.found) {
-      setStatus(lookupStatusEl, "Not found. Tap \"Add Product Manually\".", "err");
-      setCreateButtonVisible(true);
+      setStatus(lookupStatusEl, 'Not found. You can create this product below.', "err");
+
+      // show BOTH:
+      // - Add Product Manually
+      // - Create Product (Not Found)
+      setCreateButtonVisible(true, true);
       return;
     }
 
     currentProduct = r;
     renderProduct(r);
 
-    if (!code.startsWith("INV:") && r.sku) codeEl.value = "INV:" + r.sku;
+    if (!code.startsWith("INV:") && r.sku) {
+      codeEl.value = "INV:" + r.sku;
+    }
+
     setStatus(lookupStatusEl, `Found: ${r.sku}`, "ok");
   } catch (e) {
     const msg = e?.message || String(e);
@@ -600,8 +619,15 @@ async function doLookup() {
   }
 }
 
+
 function openBlankCreateForm() {
-  resetProductUI();
+  currentProduct = null;
+
+  productBoxEl.textContent = "No product loaded.";
+  btnIn.disabled = true;
+  btnOut.disabled = true;
+  btnEdit.disabled = true;
+  btnAddImage.disabled = true;
 
   codeEl.value = "";
 
@@ -616,8 +642,8 @@ function openBlankCreateForm() {
   createCard.style.display = "block";
   editCard.style.display = "none";
 
-  if (btnCreate) btnCreate.style.display = "none";
-  if (btnManualCreate) btnManualCreate.style.display = "block";
+  // manual button stays visible, not-found button hidden
+  setCreateButtonVisible(false, true);
 
   setStatus(createStatusEl, "Enter the new product details.", "muted");
   setStatus(lookupStatusEl, "", "muted");
@@ -1461,6 +1487,11 @@ btnTorch.addEventListener("click", toggleTorch);
 btnLookup.addEventListener("click", doLookup);
 btnEdit.addEventListener("click", openEditProduct);
 
+if (btnManualCreate) {
+  btnManualCreate.addEventListener("click", openBlankCreateForm);
+}
+
+
 btnCreate.addEventListener("click", openCreateFromCodeBox);
 btnSaveCreate.addEventListener("click", saveCreate);
 btnCancelCreate.addEventListener("click", () => {
@@ -1519,6 +1550,7 @@ btnClear.addEventListener("click", () => {
   scanDebugEl.textContent = "";
   scanTarget = "DEFAULT";
 });
+
 
 
 btnIn.addEventListener("click", () => doMove("IN"));
