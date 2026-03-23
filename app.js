@@ -546,6 +546,21 @@ function resetProductUI() {
   editImgEmpty.style.display = "block";
 }
 
+function getQtyOrThrow() {
+  const q = Number(qtyEl.value);
+
+  if (!Number.isFinite(q) || q <= 0) {
+    throw new Error("Enter a quantity > 0");
+  }
+
+  if (!Number.isInteger(q)) {
+    throw new Error("Quantity must be a whole number");
+  }
+
+  return q;
+}
+
+
 /* =========================
    LOOKUP / CREATE / EDIT
 ========================= */
