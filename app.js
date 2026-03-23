@@ -500,6 +500,7 @@ function renderProduct(p) {
       <tr><td>Location</td><td>${escapeHtml(p.location || "")}</td></tr>
       <tr><td>On Hand</td><td><b>${Number(p.qtyOnHand || 0)}</b></td></tr>
       <tr><td>Min Qty</td><td>${Number(p.minQty || 0)}</td></tr>
+      <tr><td>Notes</td><td>${escapeHtml(p.notes || "")}</td></tr>
     </table>
   `;
 
@@ -507,35 +508,11 @@ function renderProduct(p) {
   btnOut.disabled = false;
   btnEdit.disabled = false;
   btnAddImage.disabled = false;
-
-  setCreateButtonVisible(false);
+  btnCreate.style.display = "none";
   createCard.style.display = "none";
   editCard.style.display = "none";
 }
 
-function resetProductUI() {
-  currentProduct = null;
-  productBoxEl.textContent = "No product loaded.";
-  btnIn.disabled = true;
-  btnOut.disabled = true;
-  btnEdit.disabled = true;
-  btnAddImage.disabled = true;
-
-  setCreateButtonVisible(true);
-  createCard.style.display = "none";
-  editCard.style.display = "none";
-
-  setStatus(moveStatusEl, "", "muted");
-  setStatus(editStatusEl, "", "muted");
-  renderImageForProduct(null);
-}
-
-function getQtyOrThrow() {
-  const q = Number(qtyEl.value);
-  if (!Number.isFinite(q) || q <= 0) throw new Error("Enter a quantity > 0");
-  if (!Number.isInteger(q)) throw new Error("Quantity must be a whole number");
-  return q;
-}
 
 /* =========================
    LOOKUP / CREATE / EDIT
