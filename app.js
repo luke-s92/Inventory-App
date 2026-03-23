@@ -167,8 +167,7 @@ function escapeHtml(s) {
 }
 
 function isLikelyBarcode(s) {
-  const t = String(s || "").trim();
-  return /^[0-9]{6,}$/.test(t);
+  return /^[0-9]{6,}$/.test(String(s || "").trim());
 }
 
 function sanitizeSku(s) {
@@ -182,19 +181,13 @@ function sanitizeSku(s) {
 
 function autoSkuFromBarcodeOrTime(barcodeOrAnything) {
   const b = String(barcodeOrAnything || "").trim();
-
   if (isLikelyBarcode(b)) return sanitizeSku("SKU-" + b);
 
   const d = new Date();
   const pad = (n) => String(n).padStart(2, "0");
-  const yy = String(d.getFullYear()).slice(-2);
-  const mm = pad(d.getMonth() + 1);
-  const dd = pad(d.getDate());
-  const hh = pad(d.getHours());
-  const mi = pad(d.getMinutes());
-  const ss = pad(d.getSeconds());
-
-  return sanitizeSku(`SKU-${yy}${mm}${dd}-${hh}${mi}${ss}`);
+  return sanitizeSku(
+    `SKU-${String(d.getFullYear()).slice(-2)}${pad(d.getMonth() + 1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`
+  );
 }
 
 function getScanMode() {
@@ -236,6 +229,14 @@ function acceptedFormatsForMode(mode) {
   ];
 }
 
+function setCreateButtonVisible(show) {
+  if (!btnCreate) return;
+  btnCreate.style.display = show ? "block" : "none";
+  btnCreate.hidden = !show;
+  btnCreate.style.visibility = show ? "visible" : "hidden";
+  btnCreate.style.opacity = show ? "1" : "0";
+}
+
 function showLogin(msg) {
   try { stopScan(); } catch (_) {}
   appView.style.display = "none";
@@ -249,28 +250,12 @@ function showLogin(msg) {
 function showApp() {
   loginView.style.display = "none";
   appView.style.display = "block";
-}
-
-function setCreateButtonVisible(show) {
-  if (btnCreate) {
-    btnCreate.style.display = show ? "block" : "none";
-  }
+  setCreateButtonVisible(true);
 }
 
 /* =========================
    API
 ========================= */
-async function apiGet(path, params = {}) {
-  const url = new URL(path, WEB_APP_URL);
-  Object.entries(params).forEach(([k, v]) => {
-    if (v !== undefined && v !== null) url.searchParams.set(k, String(v));
-  });
-
-  const res = await fetch(url.toString(), { method: "GET" });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  return await res.json();
-}
-
 async function apiPost(action, payload = {}) {
   const res = await fetch(WEB_APP_URL, {
     method: "POST",
@@ -294,17 +279,9 @@ function gsRunRaw(fnName, ...args) {
     });
   }
 
-  if (fnName === "loginWithPin") {
-    return apiPost("loginWithPin", { pin: args[0] });
-  }
-
-  if (fnName === "verifySession") {
-    return apiPost("verifySession", { token: args[0] });
-  }
-
-  if (fnName === "logoutSession") {
-    return apiPost("logoutSession", { token: args[0] });
-  }
+  if (fnName === "loginWithPin") return apiPost("loginWithPin", { pin: args[0] });
+  if (fnName === "verifySession") return apiPost("verifySession", { token: args[0] });
+  if (fnName === "logoutSession") return apiPost("logoutSession", { token: args[0] });
 
   throw new Error(`Unsupported raw call: ${fnName}`);
 }
@@ -343,7 +320,6 @@ async function doLogin() {
       localStorage.setItem("inv_session_token", SESSION_TOKEN);
       setStatus(loginStatusEl, "Logged in ✅", "ok");
       showApp();
-      setCreateButtonVisible(true);
       showPage("scan");
     } else {
       setStatus(loginStatusEl, "Login failed.", "err");
@@ -358,23 +334,17 @@ async function doLogin() {
 async function doLogout() {
   try {
     if (SESSION_TOKEN) {
-      try {
-        await gsRunRaw("logoutSession", SESSION_TOKEN);
-      } catch (_) {}
+      try { await gsRunRaw("logoutSession", SESSION_TOKEN); } catch (_) {}
     }
   } finally {
     SESSION_TOKEN = "";
     localStorage.removeItem("inv_session_token");
-
     try { stopScan(); } catch (_) {}
-
     resetProductUI();
-
     codeEl.value = "";
     qtyEl.value = "";
     refEl.value = "";
     noteEl.value = "";
-
     showLogin("Logged out.");
   }
 }
@@ -388,10 +358,7 @@ btnClearPin.addEventListener("click", () => {
 pinEl.addEventListener("keydown", (e) => {
   if (e.key === "Enter") doLogin();
 });
-
-if (btnLogout) {
-  btnLogout.addEventListener("click", doLogout);
-}
+if (btnLogout) btnLogout.addEventListener("click", doLogout);
 
 /* =========================
    NAV
@@ -413,6 +380,8 @@ function showPage(page) {
   if (!scanOn) stopScan();
   if (lowOn) doLowRefresh();
   if (invOn) doInvRefresh();
+
+  if (scanOn) setCreateButtonVisible(true);
 }
 
 tabScan.addEventListener("click", () => showPage("scan"));
@@ -517,17 +486,39 @@ function resetProductUI() {
   setCreateButtonVisible(true);
 }
 
+function renderProduct(p) {
+  currentProduct = p;
+
+  const qty = Number(p.qtyOnHand || 0);
+  const min = Number(p.minQty || 0);
+  const warn = min > 0 && qty <= min ? " ⚠️ LOW STOCK" : "";
+
+  productBoxEl.innerHTML = `
+    <div><strong>${escapeHtml(p.name || "Unnamed Product")}</strong>${warn}</div>
+    <div style="margin-top:6px;">SKU: ${escapeHtml(p.sku || "-")}</div>
+    <div>Barcode: ${escapeHtml(p.barcode || "-")}</div>
+    <div>Location: ${escapeHtml(p.location || "-")}</div>
+    <div>On hand: ${qty}</div>
+    <div>Min qty: ${min}</div>
+    <div>Notes: ${escapeHtml(p.notes || "-")}</div>
+  `;
+
+  btnIn.disabled = false;
+  btnOut.disabled = false;
+  btnEdit.disabled = false;
+  btnAddImage.disabled = false;
+
+  createCard.style.display = "none";
+  editCard.style.display = "none";
+
+  renderImageForProduct(p);
+  setCreateButtonVisible(true);
+}
+
 function getQtyOrThrow() {
   const q = Number(qtyEl.value);
-
-  if (!Number.isFinite(q) || q <= 0) {
-    throw new Error("Enter a quantity > 0");
-  }
-
-  if (!Number.isInteger(q)) {
-    throw new Error("Quantity must be a whole number");
-  }
-
+  if (!Number.isFinite(q) || q <= 0) throw new Error("Enter a quantity > 0");
+  if (!Number.isInteger(q)) throw new Error("Quantity must be a whole number");
   return q;
 }
 
@@ -538,7 +529,8 @@ async function doLookup() {
   const code = codeEl.value.trim();
 
   if (!code) {
-    openBlankCreateForm();
+    resetProductUI();
+    setCreateButtonVisible(true);
     return;
   }
 
@@ -583,10 +575,8 @@ function openBlankCreateForm() {
   btnEdit.disabled = true;
   btnAddImage.disabled = true;
 
-  codeEl.value = "";
-
-  cSku.value = autoSkuFromBarcodeOrTime("");
-  cBarcode.value = "";
+  cSku.value = autoSkuFromBarcodeOrTime(codeEl.value || "");
+  cBarcode.value = isLikelyBarcode(codeEl.value) ? String(codeEl.value).trim() : "";
   cName.value = "";
   cLocation.value = "";
   cQty.value = "";
@@ -595,58 +585,11 @@ function openBlankCreateForm() {
 
   createCard.style.display = "block";
   editCard.style.display = "none";
-
-  setCreateButtonVisible(true);
 
   setStatus(createStatusEl, "Enter the new product details.", "muted");
   setStatus(lookupStatusEl, "", "muted");
 
-  window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
-}
-
-function openCreateFromCodeBox() {
-  const codeNow = (codeEl.value || "").trim();
-
-  if (!codeNow) {
-    openBlankCreateForm();
-    return;
-  }
-
-  const hasInvSku = codeNow.startsWith("INV:");
-  const invSku = hasInvSku ? codeNow.slice(4).trim() : "";
-
-  const scannedBarcode = isLikelyBarcode(codeNow) ? codeNow : "";
-  cBarcode.value = scannedBarcode;
-
-  if (invSku && /^[A-Za-z0-9-]+$/.test(invSku)) {
-    cSku.value = invSku;
-  } else {
-    cSku.value = autoSkuFromBarcodeOrTime(scannedBarcode || codeNow);
-  }
-
-  if (!cSku.value.trim()) {
-    cSku.value = autoSkuFromBarcodeOrTime(scannedBarcode || codeNow);
-  }
-
-  cName.value = "";
-  cLocation.value = "";
-  cQty.value = "";
-  cMin.value = "";
-  cNotes.value = "";
-
-  createCard.style.display = "block";
-  editCard.style.display = "none";
   setCreateButtonVisible(true);
-
-  setStatus(
-    createStatusEl,
-    scannedBarcode
-      ? "Enter Name (required). SKU auto-filled."
-      : "Manual product entry. Barcode can be left blank.",
-    "muted"
-  );
-  setStatus(lookupStatusEl, "Create form opened ↓", "ok");
-
   window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
 }
 
@@ -987,12 +930,10 @@ async function startScan() {
 
     try {
       liveStream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode: { ideal: "environment" }
-        },
+        video: { facingMode: { ideal: "environment" } },
         audio: false
       });
-    } catch (e1) {
+    } catch (_) {
       liveStream = await navigator.mediaDevices.getUserMedia({
         video: true,
         audio: false
@@ -1084,12 +1025,8 @@ async function startScan() {
         const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
         let result = null;
-
-        if (modeNow === "qr") {
-          result = jsQR(img.data, img.width, img.height);
-        } else if (modeNow === "auto") {
-          result = jsQR(img.data, img.width, img.height);
-        }
+        if (modeNow === "qr") result = jsQR(img.data, img.width, img.height);
+        else if (modeNow === "auto") result = jsQR(img.data, img.width, img.height);
 
         if (result && result.data) {
           handleScanValue(result.data);
@@ -1101,7 +1038,6 @@ async function startScan() {
     };
 
     rafId = requestAnimationFrame(loop);
-
   } catch (e) {
     const name = e?.name || "";
     const msg = e?.message || String(e);
@@ -1142,7 +1078,6 @@ function renderLowStock(items) {
     const min = Number(it.minQty || 0);
     const delta = qty - min;
     const deltaText = delta <= 0 ? `Δ ${delta}` : `Δ +${delta}`;
-
     const name = (it.name && String(it.name).trim()) ? String(it.name).trim() : "Unnamed Product";
     const sku = String(it.sku || "").trim();
 
@@ -1220,53 +1155,19 @@ async function exportLowStockPdf() {
         <meta charset="utf-8" />
         <title>Low Stock Report</title>
         <style>
-          body {
-            font-family: Arial, sans-serif;
-            margin: 24px;
-            color: #111;
-          }
-          h1 {
-            margin: 0 0 8px 0;
-            font-size: 24px;
-          }
-          .meta {
-            margin-bottom: 18px;
-            color: #555;
-            font-size: 14px;
-          }
-          table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 13px;
-          }
-          th, td {
-            border: 1px solid #ccc;
-            padding: 8px;
-            vertical-align: top;
-          }
-          th {
-            background: #f3f3f3;
-            text-align: left;
-          }
-          .num {
-            text-align: right;
-          }
-          .footer {
-            margin-top: 16px;
-            font-size: 12px;
-            color: #666;
-          }
-          @media print {
-            body {
-              margin: 12mm;
-            }
-          }
+          body { font-family: Arial, sans-serif; margin: 24px; color: #111; }
+          h1 { margin: 0 0 8px 0; font-size: 24px; }
+          .meta { margin-bottom: 18px; color: #555; font-size: 14px; }
+          table { width: 100%; border-collapse: collapse; font-size: 13px; }
+          th, td { border: 1px solid #ccc; padding: 8px; vertical-align: top; }
+          th { background: #f3f3f3; text-align: left; }
+          .footer { margin-top: 16px; font-size: 12px; color: #666; }
+          @media print { body { margin: 12mm; } }
         </style>
       </head>
       <body>
         <h1>Low Stock Report</h1>
         <div class="meta">Generated: ${escapeHtml(printedAt)}<br>Total items: ${items.length}</div>
-
         <table>
           <thead>
             <tr>
@@ -1278,11 +1179,8 @@ async function exportLowStockPdf() {
               <th>Notes</th>
             </tr>
           </thead>
-          <tbody>
-            ${htmlRows}
-          </tbody>
+          <tbody>${htmlRows}</tbody>
         </table>
-
         <div class="footer">Use your browser print dialog and choose “Save as PDF”.</div>
       </body>
       </html>
@@ -1331,7 +1229,6 @@ function renderInventory(items) {
     const min = Number(it.minQty || 0);
     const isLow = (min > 0 && qty <= min);
     const warn = isLow ? " ⚠️" : "";
-
     const name = (it.name && String(it.name).trim()) ? String(it.name).trim() : "Unnamed Product";
     const sku = String(it.sku || "").trim();
 
@@ -1426,43 +1323,6 @@ async function compressImageDataUrl_(dataUrl, maxSide, quality) {
 }
 
 /* =========================
-   RENDER PRODUCT
-========================= */
-function renderProduct(p) {
-  if (!p) {
-    resetProductUI();
-    return;
-  }
-
-  currentProduct = p;
-
-  const qty = Number(p.qtyOnHand || 0);
-  const min = Number(p.minQty || 0);
-  const lowWarn = (min > 0 && qty <= min) ? " ⚠️ LOW STOCK" : "";
-
-  productBoxEl.innerHTML = `
-    <div><strong>${escapeHtml(p.name || "Unnamed Product")}</strong>${lowWarn}</div>
-    <div style="margin-top:6px;">SKU: ${escapeHtml(p.sku || "-")}</div>
-    <div>Barcode: ${escapeHtml(p.barcode || "-")}</div>
-    <div>Location: ${escapeHtml(p.location || "-")}</div>
-    <div>On hand: ${qty}</div>
-    <div>Min qty: ${min}</div>
-    <div>Notes: ${escapeHtml(p.notes || "-")}</div>
-  `;
-
-  btnIn.disabled = false;
-  btnOut.disabled = false;
-  btnEdit.disabled = false;
-  btnAddImage.disabled = false;
-
-  createCard.style.display = "none";
-  editCard.style.display = "none";
-
-  renderImageForProduct(p);
-  setCreateButtonVisible(true);
-}
-
-/* =========================
    EVENTS
 ========================= */
 btnStart.addEventListener("click", () => {
@@ -1474,7 +1334,6 @@ btnTorch.addEventListener("click", toggleTorch);
 
 btnLookup.addEventListener("click", doLookup);
 btnEdit.addEventListener("click", openEditProduct);
-
 btnCreate.addEventListener("click", openBlankCreateForm);
 
 btnSaveCreate.addEventListener("click", saveCreate);
@@ -1533,6 +1392,7 @@ btnClear.addEventListener("click", () => {
   setStatus(scanStatusEl, "Camera idle.", "muted");
   scanDebugEl.textContent = "";
   scanTarget = "DEFAULT";
+  setCreateButtonVisible(true);
 });
 
 btnIn.addEventListener("click", () => doMove("IN"));
@@ -1590,10 +1450,8 @@ imgPicker.addEventListener("change", async () => {
 
     if (r && r.ok && r.imageUrl) {
       currentProduct.imageUrl = r.imageUrl;
-
       renderImageForProduct(currentProduct);
-      await tryLoadImageFallback_(currentProduct.sku, (imgTarget === "EDIT") ? "EDIT" : "PRODUCT");
-
+      await tryLoadImageFallback_(currentProduct.sku, imgTarget === "EDIT" ? "EDIT" : "PRODUCT");
       setStatus(statusEl, "Image saved ✅", "ok");
 
       try {
@@ -1614,7 +1472,7 @@ imgPicker.addEventListener("change", async () => {
       showLogin("Session expired. Please log in again.");
       return;
     }
-    const statusEl = (imgTarget === "EDIT") ? editStatusEl : moveStatusEl;
+    const statusEl = imgTarget === "EDIT" ? editStatusEl : moveStatusEl;
     setStatus(statusEl, msg, "err");
   }
 });
@@ -1635,8 +1493,8 @@ imgPicker.addEventListener("change", async () => {
 
       if (valid && valid.ok) {
         showApp();
-        setCreateButtonVisible(true);
         showPage(INITIAL_PAGE);
+        setCreateButtonVisible(true);
         return;
       }
     } catch (_) {}
