@@ -251,6 +251,11 @@ function showApp() {
   appView.style.display = "block";
 }
 
+function setCreateButtonVisible(show) {
+  if (!btnCreate) return;
+  btnCreate.style.display = show ? "block" : "none";
+}
+
 /* =========================
    API
 ========================= */
@@ -337,8 +342,8 @@ async function doLogin() {
       localStorage.setItem("inv_session_token", SESSION_TOKEN);
       setStatus(loginStatusEl, "Logged in ✅", "ok");
       showApp();
+      setCreateButtonVisible(true);
       showPage("scan");
-      btnCreate.style.display = "block";
     } else {
       setStatus(loginStatusEl, "Login failed.", "err");
     }
@@ -502,7 +507,8 @@ function renderProduct(p) {
   btnOut.disabled = false;
   btnEdit.disabled = false;
   btnAddImage.disabled = false;
-  btnCreate.style.display = "none";
+
+  setCreateButtonVisible(false);
   createCard.style.display = "none";
   editCard.style.display = "none";
 }
@@ -514,9 +520,11 @@ function resetProductUI() {
   btnOut.disabled = true;
   btnEdit.disabled = true;
   btnAddImage.disabled = true;
-  btnCreate.style.display = "block";
+
+  setCreateButtonVisible(true);
   createCard.style.display = "none";
   editCard.style.display = "none";
+
   setStatus(moveStatusEl, "", "muted");
   setStatus(editStatusEl, "", "muted");
   renderImageForProduct(null);
@@ -527,25 +535,6 @@ function getQtyOrThrow() {
   if (!Number.isFinite(q) || q <= 0) throw new Error("Enter a quantity > 0");
   if (!Number.isInteger(q)) throw new Error("Quantity must be a whole number");
   return q;
-}
-
-function openBlankCreateForm() {
-  cSku.value = autoSkuFromBarcodeOrTime("");
-  cBarcode.value = "";
-  cName.value = "";
-  cLocation.value = "";
-  cQty.value = "";
-  cMin.value = "";
-  cNotes.value = "";
-
-  createCard.style.display = "block";
-  editCard.style.display = "none";
-  btnCreate.style.display = "none";
-
-  setStatus(createStatusEl, "Manual product entry. Barcode can be left blank.", "muted");
-  setStatus(lookupStatusEl, "Create form opened ↓", "ok");
-
-  window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
 }
 
 /* =========================
@@ -565,8 +554,8 @@ async function doLookup() {
   try {
     const r = await gsRun("lookupCode", code);
     if (!r || !r.found) {
-      setStatus(lookupStatusEl, "Not found. Tap \"Create Product\".", "err");
-      btnCreate.style.display = "block";
+      setStatus(lookupStatusEl, "Not found. Tap \"Add Product Manually\".", "err");
+      setCreateButtonVisible(true);
       return;
     }
 
@@ -587,6 +576,25 @@ async function doLookup() {
   }
 }
 
+function openBlankCreateForm() {
+  cSku.value = autoSkuFromBarcodeOrTime("");
+  cBarcode.value = "";
+  cName.value = "";
+  cLocation.value = "";
+  cQty.value = "";
+  cMin.value = "";
+  cNotes.value = "";
+
+  createCard.style.display = "block";
+  editCard.style.display = "none";
+  setCreateButtonVisible(false);
+
+  setStatus(createStatusEl, "Manual product entry. Barcode can be left blank.", "muted");
+  setStatus(lookupStatusEl, "Create form opened ↓", "ok");
+
+  window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+}
+
 function openCreateFromCodeBox() {
   const codeNow = (codeEl.value || "").trim();
 
@@ -601,10 +609,15 @@ function openCreateFromCodeBox() {
   const scannedBarcode = isLikelyBarcode(codeNow) ? codeNow : "";
   cBarcode.value = scannedBarcode;
 
-  if (invSku && /^[A-Za-z0-9-]+$/.test(invSku)) cSku.value = invSku;
-  else cSku.value = autoSkuFromBarcodeOrTime(scannedBarcode || codeNow);
+  if (invSku && /^[A-Za-z0-9-]+$/.test(invSku)) {
+    cSku.value = invSku;
+  } else {
+    cSku.value = autoSkuFromBarcodeOrTime(scannedBarcode || codeNow);
+  }
 
-  if (!cSku.value.trim()) cSku.value = autoSkuFromBarcodeOrTime(scannedBarcode || codeNow);
+  if (!cSku.value.trim()) {
+    cSku.value = autoSkuFromBarcodeOrTime(scannedBarcode || codeNow);
+  }
 
   cName.value = "";
   cLocation.value = "";
@@ -614,8 +627,15 @@ function openCreateFromCodeBox() {
 
   createCard.style.display = "block";
   editCard.style.display = "none";
-  btnCreate.style.display = "none";
-  setStatus(createStatusEl, scannedBarcode ? "Enter Name (required). SKU auto-filled." : "Manual product entry. Barcode can be left blank.", "muted");
+  setCreateButtonVisible(false);
+
+  setStatus(
+    createStatusEl,
+    scannedBarcode
+      ? "Enter Name (required). SKU auto-filled."
+      : "Manual product entry. Barcode can be left blank.",
+    "muted"
+  );
   setStatus(lookupStatusEl, "Create form opened ↓", "ok");
 
   window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
@@ -646,7 +666,7 @@ async function saveCreate() {
     codeEl.value = "INV:" + product.sku;
     await doLookup();
     createCard.style.display = "none";
-    btnCreate.style.display = "none";
+    setCreateButtonVisible(false);
   } catch (e) {
     const msg = e?.message || String(e);
     if (/not logged in|session expired/i.test(msg)) {
@@ -851,9 +871,9 @@ async function processScannedText_(clean) {
       return true;
     }
 
-    btnCreate.style.display = "block";
     createCard.style.display = "block";
     editCard.style.display = "none";
+    setCreateButtonVisible(false);
 
     cBarcode.value = clean;
     cSku.value = autoSkuFromBarcodeOrTime(clean);
@@ -1414,7 +1434,7 @@ btnCreate.addEventListener("click", openCreateFromCodeBox);
 btnSaveCreate.addEventListener("click", saveCreate);
 btnCancelCreate.addEventListener("click", () => {
   createCard.style.display = "none";
-  btnCreate.style.display = "block";
+  setCreateButtonVisible(true);
   setStatus(createStatusEl, "", "muted");
 });
 
@@ -1444,7 +1464,6 @@ btnClear.addEventListener("click", () => {
   setStatus(lookupStatusEl, "", "muted");
   setStatus(moveStatusEl, "", "muted");
   resetProductUI();
-  btnCreate.style.display = "block";
   setStatus(scanStatusEl, "Camera idle.", "muted");
   scanDebugEl.textContent = "";
   scanTarget = "DEFAULT";
@@ -1550,8 +1569,8 @@ imgPicker.addEventListener("change", async () => {
 
       if (valid && valid.ok) {
         showApp();
+        setCreateButtonVisible(true);
         showPage(INITIAL_PAGE);
-        btnCreate.style.display = "block";
         return;
       }
     } catch (_) {}
@@ -1562,6 +1581,3 @@ imgPicker.addEventListener("change", async () => {
 
   showLogin("");
 })();
-
-})();
-
