@@ -40,6 +40,7 @@ const btnClear = document.getElementById("btnClear");
 const btnIn = document.getElementById("btnIn");
 const btnOut = document.getElementById("btnOut");
 const btnCreate = document.getElementById("btnCreate");
+const btnManualCreate = document.getElementById("btnManualCreate");
 const btnEdit = document.getElementById("btnEdit");
 
 const scanModeEl = document.getElementById("scanMode");
@@ -508,10 +509,14 @@ function renderProduct(p) {
   btnOut.disabled = false;
   btnEdit.disabled = false;
   btnAddImage.disabled = false;
-  btnCreate.style.display = "none";
+
+  if (btnCreate) btnCreate.style.display = "none";
+  if (btnManualCreate) btnManualCreate.style.display = "none";
+
   createCard.style.display = "none";
   editCard.style.display = "none";
 }
+
 
 function resetProductUI() {
   currentProduct = null;
@@ -524,6 +529,7 @@ function resetProductUI() {
   btnAddImage.disabled = true;
 
   if (btnCreate) btnCreate.style.display = "none";
+  if (btnManualCreate) btnManualCreate.style.display = "block";
 
   createCard.style.display = "none";
   editCard.style.display = "none";
@@ -539,8 +545,6 @@ function resetProductUI() {
   editImg.style.display = "none";
   editImgEmpty.style.display = "block";
 }
-
-
 
 /* =========================
    LOOKUP / CREATE / EDIT
@@ -582,6 +586,10 @@ async function doLookup() {
 }
 
 function openBlankCreateForm() {
+  resetProductUI();
+
+  codeEl.value = "";
+
   cSku.value = autoSkuFromBarcodeOrTime("");
   cBarcode.value = "";
   cName.value = "";
@@ -592,13 +600,16 @@ function openBlankCreateForm() {
 
   createCard.style.display = "block";
   editCard.style.display = "none";
-  setCreateButtonVisible(false);
 
-  setStatus(createStatusEl, "Manual product entry. Barcode can be left blank.", "muted");
-  setStatus(lookupStatusEl, "Create form opened ↓", "ok");
+  if (btnCreate) btnCreate.style.display = "none";
+  if (btnManualCreate) btnManualCreate.style.display = "block";
+
+  setStatus(createStatusEl, "Enter the new product details.", "muted");
+  setStatus(lookupStatusEl, "", "muted");
 
   window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
 }
+
 
 function openCreateFromCodeBox() {
   const codeNow = (codeEl.value || "").trim();
@@ -1466,13 +1477,34 @@ btnClear.addEventListener("click", () => {
   qtyEl.value = "";
   refEl.value = "";
   noteEl.value = "";
+
+  cSku.value = "";
+  cBarcode.value = "";
+  cName.value = "";
+  cLocation.value = "";
+  cQty.value = "";
+  cMin.value = "";
+  cNotes.value = "";
+
+  eSku.value = "";
+  eBarcode.value = "";
+  eName.value = "";
+  eLocation.value = "";
+  eMin.value = "";
+  eNotes.value = "";
+
   setStatus(lookupStatusEl, "", "muted");
   setStatus(moveStatusEl, "", "muted");
+  setStatus(createStatusEl, "", "muted");
+  setStatus(editStatusEl, "", "muted");
+
   resetProductUI();
+
   setStatus(scanStatusEl, "Camera idle.", "muted");
   scanDebugEl.textContent = "";
   scanTarget = "DEFAULT";
 });
+
 
 btnIn.addEventListener("click", () => doMove("IN"));
 btnOut.addEventListener("click", () => doMove("OUT"));
