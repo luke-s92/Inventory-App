@@ -349,7 +349,7 @@ async function doLogin() {
       localStorage.setItem("inv_session_token", SESSION_TOKEN);
       setStatus(loginStatusEl, "Logged in ✅", "ok");
       showApp();
-      setCreateButtonVisible(true);
+      setCreateButtonVisible(false,true);
       showPage("scan");
     } else {
       setStatus(loginStatusEl, "Login failed.", "err");
@@ -1496,7 +1496,7 @@ btnCreate.addEventListener("click", openCreateFromCodeBox);
 btnSaveCreate.addEventListener("click", saveCreate);
 btnCancelCreate.addEventListener("click", () => {
   createCard.style.display = "none";
-  setCreateButtonVisible(true);
+  setCreateButtonVisible(false,true);
   setStatus(createStatusEl, "", "muted");
 });
 
@@ -1653,7 +1653,7 @@ imgPicker.addEventListener("change", async () => {
 
       if (valid && valid.ok) {
         showApp();
-        setCreateButtonVisible(true);
+        setCreateButtonVisible(false,true);
         showPage(INITIAL_PAGE);
         return;
       }
