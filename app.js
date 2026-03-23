@@ -40,7 +40,6 @@ const btnClear = document.getElementById("btnClear");
 const btnIn = document.getElementById("btnIn");
 const btnOut = document.getElementById("btnOut");
 const btnCreate = document.getElementById("btnCreate");
-const btnManualCreate = document.getElementById("btnManualCreate");
 const btnEdit = document.getElementById("btnEdit");
 
 const scanModeEl = document.getElementById("scanMode");
@@ -252,16 +251,11 @@ function showApp() {
   appView.style.display = "block";
 }
 
-function setCreateButtonVisible(showNotFoundButton, showManualButton) {
+function setCreateButtonVisible(show) {
   if (btnCreate) {
-    btnCreate.style.display = showNotFoundButton ? "block" : "none";
-  }
-
-  if (btnManualCreate) {
-    btnManualCreate.style.display = showManualButton ? "block" : "none";
+    btnCreate.style.display = show ? "block" : "none";
   }
 }
-
 
 /* =========================
    API
@@ -349,7 +343,7 @@ async function doLogin() {
       localStorage.setItem("inv_session_token", SESSION_TOKEN);
       setStatus(loginStatusEl, "Logged in ✅", "ok");
       showApp();
-      setCreateButtonVisible(false,true);
+      setCreateButtonVisible(true);
       showPage("scan");
     } else {
       setStatus(loginStatusEl, "Login failed.", "err");
@@ -520,42 +514,8 @@ function resetProductUI() {
   editImg.style.display = "none";
   editImgEmpty.style.display = "block";
 
-  // default state after clear/reset:
-  // manual create visible, not-found create hidden
-  setCreateButtonVisible(false, true);
+  setCreateButtonVisible(true);
 }
-
-
-
-function resetProductUI() {
-  currentProduct = null;
-
-  productBoxEl.textContent = "No product loaded.";
-
-  btnIn.disabled = true;
-  btnOut.disabled = true;
-  btnEdit.disabled = true;
-  btnAddImage.disabled = true;
-
-  createCard.style.display = "none";
-  editCard.style.display = "none";
-
-  setStatus(moveStatusEl, "", "muted");
-  setStatus(editStatusEl, "", "muted");
-
-  productImg.removeAttribute("src");
-  productImg.style.display = "none";
-  productImgEmpty.style.display = "block";
-
-  editImg.removeAttribute("src");
-  editImg.style.display = "none";
-  editImgEmpty.style.display = "block";
-
-  // default state after clear/reset:
-  // manual create visible, not-found create hidden
-  setCreateButtonVisible(false, true);
-}
-
 
 function getQtyOrThrow() {
   const q = Number(qtyEl.value);
@@ -570,7 +530,6 @@ function getQtyOrThrow() {
 
   return q;
 }
-
 
 /* =========================
    LOOKUP / CREATE / EDIT
@@ -590,12 +549,8 @@ async function doLookup() {
     const r = await gsRun("lookupCode", code);
 
     if (!r || !r.found) {
-      setStatus(lookupStatusEl, 'Not found. You can create this product below.', "err");
-
-      // show BOTH:
-      // - Add Product Manually
-      // - Create Product (Not Found)
-      setCreateButtonVisible(true, true);
+      setStatus(lookupStatusEl, "Not found. You can create this product below.", "err");
+      setCreateButtonVisible(true);
       return;
     }
 
@@ -619,7 +574,6 @@ async function doLookup() {
   }
 }
 
-
 function openBlankCreateForm() {
   currentProduct = null;
 
@@ -642,15 +596,13 @@ function openBlankCreateForm() {
   createCard.style.display = "block";
   editCard.style.display = "none";
 
-  // manual button stays visible, not-found button hidden
-  setCreateButtonVisible(false, true);
+  setCreateButtonVisible(true);
 
   setStatus(createStatusEl, "Enter the new product details.", "muted");
   setStatus(lookupStatusEl, "", "muted");
 
   window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
 }
-
 
 function openCreateFromCodeBox() {
   const codeNow = (codeEl.value || "").trim();
@@ -684,7 +636,7 @@ function openCreateFromCodeBox() {
 
   createCard.style.display = "block";
   editCard.style.display = "none";
-  setCreateButtonVisible(false);
+  setCreateButtonVisible(true);
 
   setStatus(
     createStatusEl,
@@ -723,7 +675,7 @@ async function saveCreate() {
     codeEl.value = "INV:" + product.sku;
     await doLookup();
     createCard.style.display = "none";
-    setCreateButtonVisible(false);
+    setCreateButtonVisible(true);
   } catch (e) {
     const msg = e?.message || String(e);
     if (/not logged in|session expired/i.test(msg)) {
@@ -930,7 +882,7 @@ async function processScannedText_(clean) {
 
     createCard.style.display = "block";
     editCard.style.display = "none";
-    setCreateButtonVisible(false);
+    setCreateButtonVisible(true);
 
     cBarcode.value = clean;
     cSku.value = autoSkuFromBarcodeOrTime(clean);
@@ -1364,7 +1316,6 @@ async function exportLowStockPdf() {
   }
 }
 
-
 /* =========================
    INVENTORY
 ========================= */
@@ -1475,6 +1426,43 @@ async function compressImageDataUrl_(dataUrl, maxSide, quality) {
 }
 
 /* =========================
+   RENDER PRODUCT
+========================= */
+function renderProduct(p) {
+  if (!p) {
+    resetProductUI();
+    return;
+  }
+
+  currentProduct = p;
+
+  const qty = Number(p.qtyOnHand || 0);
+  const min = Number(p.minQty || 0);
+  const lowWarn = (min > 0 && qty <= min) ? " ⚠️ LOW STOCK" : "";
+
+  productBoxEl.innerHTML = `
+    <div><strong>${escapeHtml(p.name || "Unnamed Product")}</strong>${lowWarn}</div>
+    <div style="margin-top:6px;">SKU: ${escapeHtml(p.sku || "-")}</div>
+    <div>Barcode: ${escapeHtml(p.barcode || "-")}</div>
+    <div>Location: ${escapeHtml(p.location || "-")}</div>
+    <div>On hand: ${qty}</div>
+    <div>Min qty: ${min}</div>
+    <div>Notes: ${escapeHtml(p.notes || "-")}</div>
+  `;
+
+  btnIn.disabled = false;
+  btnOut.disabled = false;
+  btnEdit.disabled = false;
+  btnAddImage.disabled = false;
+
+  createCard.style.display = "none";
+  editCard.style.display = "none";
+
+  renderImageForProduct(p);
+  setCreateButtonVisible(true);
+}
+
+/* =========================
    EVENTS
 ========================= */
 btnStart.addEventListener("click", () => {
@@ -1487,16 +1475,12 @@ btnTorch.addEventListener("click", toggleTorch);
 btnLookup.addEventListener("click", doLookup);
 btnEdit.addEventListener("click", openEditProduct);
 
-if (btnManualCreate) {
-  btnManualCreate.addEventListener("click", openBlankCreateForm);
-}
+btnCreate.addEventListener("click", openBlankCreateForm);
 
-
-btnCreate.addEventListener("click", openCreateFromCodeBox);
 btnSaveCreate.addEventListener("click", saveCreate);
 btnCancelCreate.addEventListener("click", () => {
   createCard.style.display = "none";
-  setCreateButtonVisible(false,true);
+  setCreateButtonVisible(true);
   setStatus(createStatusEl, "", "muted");
 });
 
@@ -1550,8 +1534,6 @@ btnClear.addEventListener("click", () => {
   scanDebugEl.textContent = "";
   scanTarget = "DEFAULT";
 });
-
-
 
 btnIn.addEventListener("click", () => doMove("IN"));
 btnOut.addEventListener("click", () => doMove("OUT"));
@@ -1653,7 +1635,7 @@ imgPicker.addEventListener("change", async () => {
 
       if (valid && valid.ok) {
         showApp();
-        setCreateButtonVisible(false,true);
+        setCreateButtonVisible(true);
         showPage(INITIAL_PAGE);
         return;
       }
